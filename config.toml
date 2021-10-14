@@ -1,0 +1,4 @@
+baseURL = 'http://ismaelcelis.com/'
+languageCode = 'en-us'
+title = 'Ismael Celis'
+theme = "hugo-coder"
