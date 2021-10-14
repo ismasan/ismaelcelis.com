@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html lang="en-us">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  
+  <title>Railway-style composable pipelines in Ruby - Ismael Celis</title>
+
+  
+  
+  <meta name="description" content="An exploration of patterns for building composable data pipelines in Ruby, from the basics to the possibly YAGNI.
+Function composition Ruby&rsquo;s function composition allows you to neatly chain Procs together using the #&gt;&gt; operator.
+DISCOUNT = 200 substract_discount = -&gt;(amount) { amount - DISCOUNT } TAX_RATE = 0.19 add_tax = -&gt;(amount) { amount * (1 &#43; TAX_RATE) } calculate_total = substract_discount &gt;&gt; add_tax calculate_total.call(1000) # 952.0 #&gt;&gt; (and its inverse, #&lt;&lt;) are implemented in procs and method objects, so it&rsquo;s possible to write class-based steps." />
+  <meta name="author" content="" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://ismaelcelis.com/app.min.css" />
+
+  
+
+  
+  <link rel="preload" as="image" href="http://ismaelcelis.com/theme.png" />
+
+  
+  <link rel="preload" as="image" href="http://ismaelcelis.com/twitter.svg" />
+  
+  <link rel="preload" as="image" href="http://ismaelcelis.com/github.svg" />
+  
+
+  
+  <link rel="icon" href="http://ismaelcelis.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="http://ismaelcelis.com/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.88.1" />
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Railway-style composable pipelines in Ruby" />
+<meta property="og:description" content="Composable data pipelines in Ruby, using Railway-oriented programming" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://ismaelcelis.com/posts/composable-pipelines-ruby-railway/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-14T11:32:35+01:00" />
+<meta property="article:modified_time" content="2021-10-14T11:32:35+01:00" />
+
+
+  
+  <meta itemprop="name" content="Railway-style composable pipelines in Ruby">
+<meta itemprop="description" content="Composable data pipelines in Ruby, using Railway-oriented programming"><meta itemprop="datePublished" content="2021-10-14T11:32:35+01:00" />
+<meta itemprop="dateModified" content="2021-10-14T11:32:35+01:00" />
+<meta itemprop="wordCount" content="1981">
+<meta itemprop="keywords" content="ruby,design patterns,functional,pipelines,composition,declarative," />
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Railway-style composable pipelines in Ruby"/>
+<meta name="twitter:description" content="Composable data pipelines in Ruby, using Railway-oriented programming"/>
+
+  
+  
+</head>
+
+
+  <body class="not-ready" data-menu="false">
+    <header class="header">
+  
+  <p class="logo">
+    <a class="site-name" href="http://ismaelcelis.com/">Ismael Celis</a>
+  </p>
+  
+
+  
+  
+
+  
+  <nav class="social">
+    
+    <a
+      class="twitter"
+      style="--url: url(./twitter.svg)"
+      href="https://twitter.com/ismasan"
+      target="_blank"
+    ></a>
+    
+    <a
+      class="github"
+      style="--url: url(./github.svg)"
+      href="https://github.com/ismasan"
+      target="_blank"
+    ></a>
+    
+  </nav>
+  
+</header>
+
+
+    <main class="main">
+
+<article class="post-single">
+  <header class="post-title">
+    <p>
+      <time>Oct 14, 2021</time>
+      
+    </p>
+    <h1>Railway-style composable pipelines in Ruby</h1>
+  </header>
+  <section class="post-content"><p>An exploration of patterns for building composable data pipelines in Ruby, from the basics to the possibly YAGNI.</p>
+<h3 id="function-composition">Function composition</h3>
+<p>Ruby&rsquo;s <a href="https://thoughtbot.com/blog/proc-composition-in-ruby">function composition</a> allows you to neatly chain Procs together using the <code>#&gt;&gt;</code> operator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>
+substract_discount <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(amount) {
+ amount <span style="color:#f92672">-</span> <span style="color:#66d9ef">DISCOUNT</span>
+}
+
+<span style="color:#66d9ef">TAX_RATE</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">19</span>
+add_tax <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(amount) {
+  amount <span style="color:#f92672">*</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">TAX_RATE</span>)
+}
+
+calculate_total <span style="color:#f92672">=</span> substract_discount <span style="color:#f92672">&gt;&gt;</span> add_tax
+
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000</span>) <span style="color:#75715e"># 952.0</span>
+</code></pre></div><p><code>#&gt;&gt;</code> (and its inverse, <code>#&lt;&lt;</code>) are implemented in procs and <a href="https://ruby-doc.org/core-3.0.2/Method.html">method objects</a>, so it&rsquo;s possible to write class-based steps.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Discount</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(discount)
+    @discount <span style="color:#f92672">=</span> discount
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(amount)
+    amount <span style="color:#f92672">-</span> @discount
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">&gt;&gt;</span>(other)
+    method(<span style="color:#e6db74">:call</span>) <span style="color:#f92672">&gt;&gt;</span> other
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+calculate_total <span style="color:#f92672">=</span> <span style="color:#66d9ef">Discount</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">200</span>) <span style="color:#f92672">&gt;&gt;</span> add_tax
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000</span>) <span style="color:#75715e"># 952.0</span>
+</code></pre></div><h3 id="a-problem-error-handling">A problem: error handling</h3>
+<p>Let&rsquo;s say we want to validate that discounts aren&rsquo;t greater than amounts, and treat that case as an error scenario.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>
+substract_discount <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(amount) {
+  <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">&gt;</span> amount
+    <span style="color:#75715e"># What now?</span>
+  <span style="color:#66d9ef">else</span>
+    amount <span style="color:#f92672">-</span> <span style="color:#66d9ef">DISCOUNT</span>
+  <span style="color:#66d9ef">end</span>
+}
+</code></pre></div><p>What now indeed. We could raise an exception.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">&gt;</span> amount
+  <span style="color:#66d9ef">raise</span> <span style="color:#66d9ef">DiscountGreaterThanAmountError</span>, <span style="color:#e6db74">&#34;discount of </span><span style="color:#e6db74">#{</span><span style="color:#66d9ef">DISCOUNT</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> is greater than amount </span><span style="color:#e6db74">#{</span>amount<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>But that means that client code needs to be aware of all the possible error cases.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">begin</span>
+  result <span style="color:#f92672">=</span> calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">100</span>)
+<span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">DiscountGreaterThanAmountError</span> <span style="color:#f92672">=&gt;</span> ex
+  <span style="color:#75715e"># handle error here</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>Add specialised exceptions for different steps, and things get unwieldy.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">DiscountGreaterThanAmountError</span>
+<span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">AmountTooSmallError</span>
+<span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">AmountIsNotNumberError</span>
+<span style="color:#66d9ef">rescue</span> <span style="color:#66d9ef">Etc</span>
+</code></pre></div><p>You get the idea. Pipelines should allow you to treat each step as interchangeable little black boxes. Handling errors in this way just leaks individual step details to the client code.</p>
+<p>We could instead return a special error object.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">&gt;</span> amount
+  <span style="color:#66d9ef">Error</span><span style="color:#f92672">.</span>new(<span style="color:#e6db74">&#39;amount is greater than amount&#39;</span>)
+<span style="color:#66d9ef">else</span>
+  amount <span style="color:#f92672">-</span> <span style="color:#66d9ef">DISCOUNT</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>The problem here is that this forces all steps downstream to handle errors.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">add_tax <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(amount_or_error) {
+  <span style="color:#66d9ef">if</span> amount_or_error<span style="color:#f92672">.</span>is_a?(<span style="color:#66d9ef">Error</span>)
+    <span style="color:#75715e"># pass the error as-is?</span>
+    amount_or_error
+  <span style="color:#66d9ef">else</span>
+    amount_or_error <span style="color:#f92672">*</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">TAX_RATE</span>)
+  <span style="color:#66d9ef">end</span>
+}
+</code></pre></div><p>There’s a better way.</p>
+<h3 id="railway-oriented-pipelines">Railway oriented pipelines</h3>
+<p>Let&rsquo;s take a step back (pun intended). The happy-path examples above work because all steps in the pipeline expect the same type (numeric, in this case).
+But we now want to incorporate errors into our possible results. We need to wrap our values in a uniform interface that supports expressing  errors. That’s a result object.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Result</span>
+  <span style="color:#66d9ef">attr_reader</span> <span style="color:#e6db74">:value</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(value)
+    @value <span style="color:#f92672">=</span> value
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Success</span> <span style="color:#f92672">&lt;</span> self
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Failure</span> <span style="color:#f92672">&lt;</span> self
+    <span style="color:#66d9ef">attr_reader</span> <span style="color:#e6db74">:error</span>
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(value <span style="color:#f92672">=</span> <span style="color:#66d9ef">nil</span>, error <span style="color:#f92672">=</span> <span style="color:#66d9ef">nil</span>)
+      <span style="color:#66d9ef">super</span>(value)
+      @error <span style="color:#f92672">=</span> error
+    <span style="color:#66d9ef">end</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>A result wraps a value and exposes it as <code>#value</code>.
+Subclass <code>Result::Success</code> represents a successful result. <code>Result::Failure</code> is the failed case and also includes an optional <code>#error</code>.
+Let&rsquo;s now refactor our pipeline steps to take a <code>Result::Success</code> as argument, and return a <code>Result::Success</code> or <code>Result::Failure</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># new interface: #call(Result::Success) Result::Success | Result::Failure</span>
+substract_discount <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(result) {
+  <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">&gt;</span> result<span style="color:#f92672">.</span>value
+    <span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Failure</span><span style="color:#f92672">.</span>new(result<span style="color:#f92672">.</span>value, <span style="color:#e6db74">&#39;discount is greater than amount&#39;</span>)
+  <span style="color:#66d9ef">else</span>
+    <span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(result<span style="color:#f92672">.</span>value <span style="color:#f92672">-</span> <span style="color:#66d9ef">DISCOUNT</span>)
+  <span style="color:#66d9ef">end</span>
+}
+</code></pre></div><p>And the same for <code>add_tax</code>.
+Now the key: each Result subclass implements a <code>#map(callable)</code> Result interface.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Success</span> <span style="color:#f92672">&lt;</span> self
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">map</span>(callable)
+    callable<span style="color:#f92672">.</span>call(self)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Failure</span> <span style="color:#f92672">&lt;</span> self
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">map</span>(callable)
+    self
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>What&rsquo;s all this about? Now we can chain pipeline steps using result sub types as glue.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># Happy path</span>
+<span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">1000</span>)
+  <span style="color:#f92672">.</span>map(substract_discount)
+  <span style="color:#f92672">.</span>map(add_tax)
+<span style="color:#75715e"># Returns Success(952)</span>
+
+<span style="color:#75715e"># Error path</span>
+<span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">100</span>)
+  <span style="color:#f92672">.</span>map(substract_discount)
+  <span style="color:#f92672">.</span>map(add_tax)
+<span style="color:#75715e"># Returns Failure(100, &#39;discount is greater than amount&#39;)</span>
+</code></pre></div><p>Note that, in the error case, <code>add_tax</code> was never applied. This is because <code>substract_discount</code> returns a <code>Result::Failure</code>, which then maps to <code>add_tax</code> as</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">map</span>(add_tax)
+  self
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>In other words, a failure result returns itself without ever calling the next step. This means that the first failure encountered short-circuits the pipeline, forwarding the failure object all the way to its other end.
+This is sometimes called <a href="https://vimeo.com/113707214">Railway oriented programming</a>, because it conceptually separates data flow into distinct success and failure &ldquo;tracks&rdquo;.</p>
+<p><img src="/images/2021/railway-oriented-programming.png" alt="Railway oriented programming"></p>
+<p>In the (professionally drawn) diagram above, once R2 returns a failure, it is propagated to the end of the pipeline, skipping R3, R4 and R5.</p>
+<p>The FP-curious reader might notice that this Result implementation is a type of monad. Depending on your domain you might want to use an <a href="https://en.wikipedia.org/wiki/Option_type">Option type</a> instead, for example when processing lists where the output can be either a new list (&ldquo;Some&rdquo;) or an empty list (&ldquo;None&rdquo;). See <a href="https://medium.com/@baweaver/functional-programming-in-ruby-flow-control-565bbdcdf2a2">this nice blog post</a> for more in-depth Ruby examples. You might also be reminded of Promises in various languages, which share a lot with this approach.</p>
+<h3 id="back-to-declarative">Back to declarative</h3>
+<p>Great, result objects give us a generic way to handle errors at any point in pipelines, but we&rsquo;ve lost the ability to compose steps declaratively, for reuse or configuration , using the <code>#&gt;&gt;</code> operator. Let&rsquo;s add that back in.</p>
+<p>But before that, let&rsquo;s add a helper to wrap regular values into <code>Result::Success</code> instances.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Result</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">.</span><span style="color:#a6e22e">wrap</span>(value)
+    value<span style="color:#f92672">.</span>is_a?(<span style="color:#66d9ef">Result</span>) ? value : <span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(value)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+<span style="color:#75715e"># Usage:</span>
+<span style="color:#75715e"># result = Result.wrap(1000) # returns a Result::Success</span>
+<span style="color:#75715e"># result.value # 1000</span>
+</code></pre></div><p>We&rsquo;ll have a <code>Chain</code> class to map two callables via <code>Result#map</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Chain</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(left_callable, right_callable)
+    @left_callable, @right_callable <span style="color:#f92672">=</span> left_callable, right_callable
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(result)
+    <span style="color:#66d9ef">Result</span><span style="color:#f92672">.</span>wrap(result)<span style="color:#f92672">.</span>map(@left_callable)<span style="color:#f92672">.</span>map(@right_callable)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>It glues two steps together as a single callable exposing the same <code>#call(Success) Success | Failure</code> interface.
+A successful result from the first step is piped as input to the second one.
+Failures are returned as-is.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">calculate_total <span style="color:#f92672">=</span> <span style="color:#66d9ef">Chain</span><span style="color:#f92672">.</span>new(substract_discount, add_tax)
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000</span>) <span style="color:#75715e"># Success(952.0)</span>
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">100</span>) <span style="color:#75715e"># Failure(100, &#39;Discount is greater than amount&#39;)</span>
+</code></pre></div><p>Now we&rsquo;ll create a <code>Chainable</code> mixin to implement <code>#&gt;&gt;</code>.</p>
+<p>Chains can produce new chains:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">calculate_total <span style="color:#f92672">=</span> <span style="color:#66d9ef">Chain</span><span style="color:#f92672">.</span>new(substract_discount, add_tax)
+total_with_offer <span style="color:#f92672">=</span> calculate_total <span style="color:#f92672">&gt;&gt;</span> add_special_offer
+</code></pre></div><p>Finally, we&rsquo;ll create a <code>Step</code> class to wrap our custom steps and make them <em>chainable</em>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Step</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">Chainable</span>
+
+  <span style="color:#75715e"># Accept a block, or anything that responds to #call</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(callable <span style="color:#f92672">=</span> <span style="color:#66d9ef">nil</span>, <span style="color:#f92672">&amp;</span>block)
+    @callable <span style="color:#f92672">=</span> callable <span style="color:#f92672">||</span> block
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(result)
+    @callable<span style="color:#f92672">.</span>call(<span style="color:#66d9ef">Result</span><span style="color:#f92672">.</span>wrap(result))
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>This gives us:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">substract_discount <span style="color:#f92672">=</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">DISCOUNT</span> <span style="color:#f92672">&gt;</span> result<span style="color:#f92672">.</span>value
+    <span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Failure</span><span style="color:#f92672">.</span>new(result<span style="color:#f92672">.</span>value, <span style="color:#e6db74">&#39;discount is greater than amount&#39;</span>)
+  <span style="color:#66d9ef">else</span>
+    <span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(result<span style="color:#f92672">.</span>value <span style="color:#f92672">-</span> <span style="color:#66d9ef">DISCOUNT</span>)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+add_tax <span style="color:#f92672">=</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new { <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span> <span style="color:#f92672">...</span> etc }
+
+calculate_total <span style="color:#f92672">=</span> substract_discount <span style="color:#f92672">&gt;&gt;</span> add_tax
+<span style="color:#75715e"># produces Chain(substract_discount, add_tax)</span>
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000</span>) <span style="color:#75715e"># Success(952.0)</span>
+</code></pre></div><p>Note that any callable can be made pipeline-compatible.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">custom_step <span style="color:#f92672">=</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new(<span style="color:#66d9ef">MyCustomCallable</span><span style="color:#f92672">.</span>new)
+pipeline <span style="color:#f92672">=</span> some_step <span style="color:#f92672">&gt;&gt;</span> custom_step <span style="color:#f92672">&gt;&gt;</span> some_other_step
+</code></pre></div><h3 id="some-syntax-sugar">Some syntax sugar</h3>
+<p>Since instantiating <code>Result::Success</code> or <code>Result::Failure</code> will be commonplace within step implementations, let&rsquo;s add a convenience to <code>Result::Success</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Success</span> <span style="color:#f92672">&lt;</span> self
+  <span style="color:#75715e"># ...etc</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">success</span>(value)
+    <span style="color:#66d9ef">Success</span><span style="color:#f92672">.</span>new(value)
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">failure</span>(val <span style="color:#f92672">=</span> value, error)
+    <span style="color:#66d9ef">Failure</span><span style="color:#f92672">.</span>new(val, error)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>This is just so that we have the shorter <code>result.success(new_value)</code> and <code>result.failure('something bad happened')</code> available in our steps.</p>
+<p>Note that these additions are only required in <code>Result::Success</code>, as that&rsquo;s the only type ever passed to step callables.</p>
+<p>### Possibility 1: declarative Pipeline class</p>
+<p>We can add some extra infrastructure to have portable pipeline definitions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">pipeline1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">Pipeline</span><span style="color:#f92672">.</span>new <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>pl<span style="color:#f92672">|</span>
+  <span style="color:#75715e"># register steps as callables</span>
+  pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">Discount</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">200</span>)
+	pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">Tax</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">19</span>)
+  <span style="color:#75715e"># ... or blocks</span>
+  pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span>
+    <span style="color:#66d9ef">Logger</span><span style="color:#f92672">.</span>info <span style="color:#e6db74">&#34;Got </span><span style="color:#e6db74">#{</span>result<span style="color:#f92672">.</span>inspect<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    result
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+result <span style="color:#f92672">=</span> pipeline1<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000</span>) <span style="color:#75715e"># Result::Success(952.0)</span>
+</code></pre></div><p>The implementation goes something like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pipeline</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>
+    <span style="color:#75715e"># Start with a no-op step</span>
+    @chain <span style="color:#f92672">=</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new { <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span> result }
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">step</span>(callable <span style="color:#f92672">=</span> <span style="color:#66d9ef">nil</span>, <span style="color:#f92672">&amp;</span>block)
+    @chain <span style="color:#f92672">=</span> @chain <span style="color:#f92672">&gt;&gt;</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new(callable <span style="color:#f92672">||</span> block)
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(value)
+    @chain<span style="color:#f92672">.</span>call(value)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p><code>Pipeline</code> is itself composable, since it implements the same <code>#call(Success) Success | Failure</code> interface.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">pipeline2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">Pipeline</span><span style="color:#f92672">.</span>new <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>pl<span style="color:#f92672">|</span>
+  pl<span style="color:#f92672">.</span>step pipeline1 <span style="color:#75715e"># treat a Pipeline like a regular Step</span>
+  pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">FinalStep</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>We can add some nice little helpers on top of <code>#step</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># Pipeline</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">debug!</span>
+  step <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span>
+    byebug
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">log</span>(label)
+  step <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span>
+    <span style="color:#66d9ef">Logger</span><span style="color:#f92672">.</span>info <span style="color:#e6db74">&#34;[</span><span style="color:#e6db74">#{</span>label<span style="color:#e6db74">}</span><span style="color:#e6db74">] </span><span style="color:#e6db74">#{</span>result<span style="color:#f92672">.</span>inspect<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    result
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>Use case:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">Pipeline</span><span style="color:#f92672">.</span>new<span style="color:#f92672">.</span>tap <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>pl<span style="color:#f92672">|</span>
+  pl<span style="color:#f92672">.</span>log <span style="color:#e6db74">&#39;before discount&#39;</span>
+  pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">Discount</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">200</span>)
+  pl<span style="color:#f92672">.</span>log <span style="color:#e6db74">&#39;after discount&#39;</span>
+  pl<span style="color:#f92672">.</span>step <span style="color:#66d9ef">Tax</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">0</span><span style="color:#f92672">.</span><span style="color:#ae81ff">19</span>)
+  pl<span style="color:#f92672">.</span>debug!
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>This could be a nice little abstraction for middleware-style pipelines.</p>
+<h3 id="possibility-2-pseudo-runtime-type-system">Possibility 2: pseudo (runtime) type system</h3>
+<p>What follows builds on the infrastructure described above, and is inspired by the <a href="https://dry-rb.org/gems/dry-types/master/">Dry-*</a> set of Ruby gems. For real-world use of these ideas you can refer to those libraries, which are mature and heavily optimised for performance.</p>
+<p>Let&rsquo;s start with a no-op step as a base to compose more specialised behaviour. This is the identity monad in the functional world.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">Noop</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Step</span><span style="color:#f92672">.</span>new { <span style="color:#f92672">|</span>result<span style="color:#f92672">|</span> result }
+</code></pre></div><p>Let&rsquo;s now add some extra conveniences to our <code>Chainable</code> mixin (the one that affords <code>#&gt;&gt;</code> to <code>Step</code> and <code>Chain</code>).</p>
+<h4 id="transform"><code>#transform</code></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Chainable
+  <span style="color:#75715e"># .. etc</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transform</span>(callable <span style="color:#f92672">=</span> <span style="color:#66d9ef">nil</span>, <span style="color:#f92672">&amp;</span>block)
+    transformation <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(result) {
+      new_value <span style="color:#f92672">=</span> callable<span style="color:#f92672">.</span>call(result<span style="color:#f92672">.</span>value)
+      result<span style="color:#f92672">.</span>success(new_value)
+    }
+    <span style="color:#75715e"># Pipe self to transformation step</span>
+    <span style="color:#75715e"># returning a new Chain</span>
+    self <span style="color:#f92672">&gt;&gt;</span> transformation
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>This is just a shortcut for value-transformation pipelines where the operations are assumed to be successful. An example for coercible values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">to_int <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>transform { <span style="color:#f92672">|</span>value<span style="color:#f92672">|</span> value<span style="color:#f92672">.</span>to_i }
+<span style="color:#75715e"># This works, too:</span>
+to_int <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>transform(<span style="color:#f92672">&amp;</span><span style="color:#e6db74">:to_i</span>)
+<span style="color:#75715e"># This returns Chain(Noop, transform)</span>
+
+<span style="color:#75715e"># Now use it in other pipelines</span>
+calculate_total <span style="color:#f92672">=</span> to_int <span style="color:#f92672">&gt;&gt;</span> substract_discount <span style="color:#f92672">&gt;&gt;</span> add_tax
+</code></pre></div><h4 id="check"><code>#check</code></h4>
+<p>Quick boolean check on a result&rsquo;s value.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Chainable
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">check</span>(err <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;did not pass the check&#39;</span>, <span style="color:#f92672">&amp;</span>block)
+    a_check <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(result) {
+      block<span style="color:#f92672">.</span>call(result<span style="color:#f92672">.</span>value) ? result : result<span style="color:#f92672">.</span>failure(err)
+    }
+    self <span style="color:#f92672">&gt;&gt;</span> a_check
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>Usage:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">is_a_string <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>check(<span style="color:#e6db74">&#39;not a string&#39;</span>) { <span style="color:#f92672">|</span>value<span style="color:#f92672">|</span> value<span style="color:#f92672">.</span>is_a?(String) }
+is_a_string<span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;yup&#39;</span>) <span style="color:#75715e"># Success(&#39;yup&#39;)</span>
+is_a_string<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">10</span>) <span style="color:#75715e"># Failure(&#39;not a string&#39;)</span>
+</code></pre></div><h4 id="is_a"><code>#is_a</code></h4>
+<p>Simple type check on top of <code>#check</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Chainable
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_a</span>(klass)
+    check(<span style="color:#e6db74">&#34;is not a </span><span style="color:#e6db74">#{</span>klass<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>) { <span style="color:#f92672">|</span>value<span style="color:#f92672">|</span> value<span style="color:#f92672">.</span>is_a?(klass) }
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>This one allows us to type-check input values, or return a <code>Failure</code> early on in a pipeline.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">must_be_numeric <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">Numeric</span>)
+calculate_total <span style="color:#f92672">=</span> must_be_numeric <span style="color:#f92672">&gt;&gt;</span> substract_discount <span style="color:#f92672">&gt;&gt;</span> add_tax
+calculate_total<span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;nope!&#39;</span>) <span style="color:#75715e"># Result::Failure(&#39;is not a Numeric&#39;)</span>
+</code></pre></div><p>#### <code>#|</code></p>
+<p>Here we implement the <code>or</code> logical operator by returning a custom callable.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Chainable
+  <span style="color:#75715e"># Disjunction operator (or)</span>
+  <span style="color:#75715e"># return an Or instance</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">|</span>(other)
+    <span style="color:#66d9ef">Or</span><span style="color:#f92672">.</span>new(self, other)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Or</span>
+  <span style="color:#66d9ef">include</span> <span style="color:#66d9ef">Chainable</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">initialize</span>(left_callable, right_callable)
+    @left_callable, @right_callable <span style="color:#f92672">=</span> left_callable, right_callable
+  <span style="color:#66d9ef">end</span>
+
+  <span style="color:#75715e"># if left callable returns Success, return it.</span>
+  <span style="color:#75715e"># Otherwise try right callable.</span>
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(result)
+    result <span style="color:#f92672">=</span> @left_callable<span style="color:#f92672">.</span>call(result)
+    result<span style="color:#f92672">.</span>is_a?(<span style="color:#66d9ef">Result</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Success</span>) ? result : @right_callable<span style="color:#f92672">.</span>call(result<span style="color:#f92672">.</span>success)
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>Use case:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">int_or_string <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(Integer) <span style="color:#f92672">|</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(String)
+int_or_string<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">10</span>) <span style="color:#75715e"># Success(10)</span>
+int_or_string<span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;yup!&#39;</span>) <span style="color:#75715e"># Success(&#39;yup!&#39;)</span>
+int_or_string<span style="color:#f92672">.</span>call({}) <span style="color:#75715e"># Failure(&#39;{} is not a String&#39;)</span>
+</code></pre></div><p>With these helpers in hand, we could, if pressed, devise a kind of runtime type system.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Types
+  String <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span>String)
+  <span style="color:#66d9ef">Numeric</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">Numeric</span>)
+  <span style="color:#66d9ef">Nil</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">NilClass</span>)
+  <span style="color:#66d9ef">True</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">TrueClass</span>)
+  <span style="color:#66d9ef">False</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">FalseClass</span>)
+  <span style="color:#75715e"># etc</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>We can now combine these base &ldquo;types&rdquo; into other types. Here&rsquo;s a &ldquo;Boolean&rdquo;:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">module</span> Types
+  <span style="color:#66d9ef">Boolean</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">False</span>
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Boolean</span><span style="color:#f92672">.</span>call(<span style="color:#66d9ef">true</span>) <span style="color:#75715e"># Success(true)</span>
+<span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Boolean</span><span style="color:#f92672">.</span>call(<span style="color:#66d9ef">false</span>) <span style="color:#75715e"># Success(false)</span>
+<span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Boolean</span><span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;nope&#39;</span>) <span style="color:#75715e"># Failure</span>
+</code></pre></div><p>And here&rsquo;s a <a href="https://en.wikipedia.org/wiki/Option_type">Maybe type</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">maybe_string <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Nil</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>String
+
+maybe_string<span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;yes!&#39;</span>) <span style="color:#75715e"># Success(&#39;yes!&#39;)</span>
+maybe_string<span style="color:#f92672">.</span>call(<span style="color:#66d9ef">nil</span>) <span style="color:#75715e"># Success(nil)</span>
+</code></pre></div><p>As you can see, we&rsquo;re using disjunctions (the <code>|</code> operator) as a kind of runtime <a href="https://en.wikipedia.org/wiki/Union_type">Union type</a>.</p>
+<p>We can now combine basic, custom types and operators into complex logic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">require <span style="color:#e6db74">&#39;money&#39;</span>
+
+<span style="color:#66d9ef">module</span> Types
+  <span style="color:#66d9ef">Money</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Noop</span><span style="color:#f92672">.</span>is_a(<span style="color:#f92672">::</span><span style="color:#66d9ef">Money</span>)
+<span style="color:#66d9ef">end</span>
+
+<span style="color:#75715e"># Coerce an integer into a Money instance</span>
+int_to_gbp <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>Integer<span style="color:#f92672">.</span>transform{ <span style="color:#f92672">|</span>int<span style="color:#f92672">|</span> <span style="color:#66d9ef">Money</span><span style="color:#f92672">.</span>new(int, <span style="color:#e6db74">&#39;GBP&#39;</span>) }
+<span style="color:#75715e"># Is it already USD?</span>
+is_usd <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Money</span><span style="color:#f92672">.</span>check { <span style="color:#f92672">|</span>amount<span style="color:#f92672">|</span> amount<span style="color:#f92672">.</span>currency<span style="color:#f92672">.</span>code <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;USD&#39;</span> }
+<span style="color:#75715e"># Exchange to USD</span>
+to_usd <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Money</span><span style="color:#f92672">.</span>transform { <span style="color:#f92672">|</span>amount<span style="color:#f92672">|</span> amount<span style="color:#f92672">.</span>exchange_to(<span style="color:#e6db74">&#39;USD&#39;</span>) }
+
+<span style="color:#75715e"># Check minimum money amount</span>
+gte <span style="color:#f92672">=</span> <span style="color:#f92672">-&gt;</span>(cents) {
+  <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Money</span><span style="color:#f92672">.</span>check(<span style="color:#e6db74">&#34;must be &gt;= than </span><span style="color:#e6db74">#{</span>cents<span style="color:#e6db74">}</span><span style="color:#e6db74"> cents&#34;</span>) { <span style="color:#f92672">|</span>amount<span style="color:#f92672">|</span> amount<span style="color:#f92672">.</span>cents <span style="color:#f92672">&gt;=</span> cents }
+}
+
+<span style="color:#75715e"># * If it&#39;s an Integer, convert into GBP Money instance</span>
+<span style="color:#75715e"># * else if it&#39;s already a Money</span>
+<span style="color:#75715e">#   * if already USD, stop</span>
+<span style="color:#75715e">#   * else convert to USD</span>
+<span style="color:#75715e"># * finally validate that it&#39;s greater or equal than $1000.00</span>
+money <span style="color:#f92672">=</span> (int_to_gbp <span style="color:#f92672">||</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Money</span>) <span style="color:#f92672">&gt;&gt;</span> (is_usd <span style="color:#f92672">|</span> to_usd) <span style="color:#f92672">&gt;&gt;</span> gte(<span style="color:#ae81ff">1000_00</span>)
+
+money<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">1000_10</span>) <span style="color:#75715e"># Success(Money(1_368_58, &#39;USD&#39;))</span>
+money<span style="color:#f92672">.</span>call(<span style="color:#66d9ef">Money</span><span style="color:#f92672">.</span>new(<span style="color:#ae81ff">1000_00</span>, <span style="color:#e6db74">&#39;USD&#39;</span>)) <span style="color:#75715e"># Success(Money(1000_00, &#39;USD&#39;))</span>
+money<span style="color:#f92672">.</span>call(<span style="color:#ae81ff">999_99</span>) <span style="color:#75715e"># Failure(&#34;must be &gt;= than 100000 cents&#34;)</span>
+money<span style="color:#f92672">.</span>call(<span style="color:#e6db74">&#39;nope&#39;</span>) <span style="color:#75715e"># Failure(&#39;is not a Money&#39;)</span>
+</code></pre></div><h3 id="advanced-types-arrays-hashes">Advanced &ldquo;types&rdquo;: Arrays, hashes</h3>
+<p>The basic <code>Step</code> class can also be subclassed to handle composite type definitions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">array_of_strings_or_numbers <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>Array<span style="color:#f92672">.</span>of(<span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>String <span style="color:#f92672">|</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Numeric</span>)
+
+<span style="color:#66d9ef">Birthday</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>String<span style="color:#f92672">.</span>check(<span style="color:#e6db74">&#39;not a date&#39;</span>) { <span style="color:#f92672">|</span>str<span style="color:#f92672">|</span> str <span style="color:#f92672">=~</span> <span style="color:#e6db74">/\d{4}-\d{2}-\d{2}/</span> }
+
+user_hash <span style="color:#f92672">=</span> <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Hash</span><span style="color:#f92672">.</span>schema(
+  name: <span style="color:#66d9ef">Types</span><span style="color:#f92672">::</span>String,
+  <span style="color:#e6db74">birthday</span>: <span style="color:#66d9ef">Birthday</span>
+)
+</code></pre></div><p>And a long <em>etc</em>. Other examples include checking specific values, interfaces, concurrent processing of arrays. See what <a href="https://dry-rb.org/gems/dry-types/master/">Dry-Types</a> and related gems have on offer.</p>
+</section>
+
+  
+  
+  <footer class="post-tags">
+     
+    <a href="http://ismaelcelis.com/tags/ruby">ruby</a>
+     
+    <a href="http://ismaelcelis.com/tags/design-patterns">design patterns</a>
+     
+    <a href="http://ismaelcelis.com/tags/functional">functional</a>
+     
+    <a href="http://ismaelcelis.com/tags/pipelines">pipelines</a>
+     
+    <a href="http://ismaelcelis.com/tags/composition">composition</a>
+     
+    <a href="http://ismaelcelis.com/tags/declarative">declarative</a>
+    
+  </footer>
+  
+
+  
+  
+  
+
+  
+  
+</article>
+
+</main>
+
+    <footer class="footer">
+  <p>&copy; 2021 <a href="http://ismaelcelis.com/">Ismael Celis</a></p>
+  <p>Powered by <a href="https://gohugo.io/" rel="noopener" target="_blank">Hugo️️</a>️</p>
+  <p>
+    <a href="https://github.com/nanxiaobei/hugo-paper" rel="noopener" target="_blank">Paper 5.1</a>
+  </p>
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>functional on Ismael Celis</title>
+    <link>http://ismaelcelis.com/tags/functional/</link>
+    <description>Recent content in functional on Ismael Celis</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 14 Oct 2021 11:32:35 +0100</lastBuildDate><atom:link href="http://ismaelcelis.com/tags/functional/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Railway-style composable pipelines in Ruby</title>
+      <link>http://ismaelcelis.com/posts/composable-pipelines-ruby-railway/</link>
+      <pubDate>Thu, 14 Oct 2021 11:32:35 +0100</pubDate>
+      
+      <guid>http://ismaelcelis.com/posts/composable-pipelines-ruby-railway/</guid>
+      <description>An exploration of patterns for building composable data pipelines in Ruby, from the basics to the possibly YAGNI.
+Function composition Ruby&amp;rsquo;s function composition allows you to neatly chain Procs together using the #&amp;gt;&amp;gt; operator.
+DISCOUNT = 200 substract_discount = -&amp;gt;(amount) { amount - DISCOUNT } TAX_RATE = 0.19 add_tax = -&amp;gt;(amount) { amount * (1 + TAX_RATE) } calculate_total = substract_discount &amp;gt;&amp;gt; add_tax calculate_total.call(1000) # 952.0 #&amp;gt;&amp;gt; (and its inverse, #&amp;lt;&amp;lt;) are implemented in procs and method objects, so it&amp;rsquo;s possible to write class-based steps.</description>
+    </item>
+    
+  </channel>
+</rss>
