@@ -1,0 +1,16 @@
+/* override post entry
+ * ----------------------------------*/
+body .post-entry {
+}
+body .post-entry a {
+  position: inherit;
+  inset: auto;
+  margin-bottom: 0;
+  font-size: 3rem;
+  display: block;
+  line-height: 1.3;
+}
+body .post-entry a:hover {
+  text-decoration: underline;
+}
+

@@ -1,5 +1,10 @@
 {{ define "main" }}
 
+<!-- Main Title -->
+{{ if .Title }}
+<h1 class="main-title">{{ .Title }}</h1>
+{{ end }}
+
 <!-- $pages -->
 {{ $pages := union .RegularPages .Sections }}
 <!---->{{ if .IsHome }} {{ $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
@@ -12,8 +17,6 @@
   <time>{{ .Date | time.Format ":date_medium" }}</time>
 </article>
 {{ end }}
-
-{{ partial "older_posts" }}
 
 <!-- Main Nav -->
 {{ if gt $paginator.TotalPages 1 }}
