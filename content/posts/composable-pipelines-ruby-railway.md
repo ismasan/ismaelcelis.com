@@ -614,5 +614,6 @@ user_hash = Types::Hash.schema(
 )
 ```
 
-And a long _etc_. Other examples include checking specific values, interfaces, concurrent processing of arrays. See what [Dry-Types](https://dry-rb.org/gems/dry-types/master/) and related gems have on offer.
+And a long _etc_. Other examples include checking specific values, interfaces, concurrent processing of arrays.
+The [Dry-Types](https://dry-rb.org/gems/dry-types/master/) project and related gems are a good showcase of where we can take these patterns in Ruby.
 
