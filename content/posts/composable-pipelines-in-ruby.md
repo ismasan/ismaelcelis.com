@@ -19,14 +19,10 @@ Ruby's [function composition](https://thoughtbot.com/blog/proc-composition-in-ru
 
 ```ruby
 DISCOUNT = 200
-substract_discount = ->(amount) {
- amount - DISCOUNT
-}
+substract_discount = ->(amount) { amount - DISCOUNT }
 
 TAX_RATE = 0.19
-add_tax = ->(amount) {
-  amount * (1 + TAX_RATE)
-}
+add_tax = ->(amount) { amount * (1 + TAX_RATE) }
 
 calculate_total = substract_discount >> add_tax
 
@@ -73,7 +69,8 @@ What now indeed. We could raise an exception.
 
 ```ruby
 if DISCOUNT > amount
-  raise DiscountGreaterThanAmountError, "discount of #{DISCOUNT} is greater than amount #{amount}"
+  raise DiscountGreaterThanAmountError, \
+    "discount of #{DISCOUNT} is greater than amount #{amount}"
 ```
 
 But that means that client code needs to be aware of all the possible error cases.
@@ -237,7 +234,8 @@ We'll have a `Chain` class to map two callables via `Result#map`.
 ```ruby
 class Chain
   def initialize(left_callable, right_callable)
-    @left_callable, @right_callable = left_callable, right_callable
+    @left_callable = left_callable
+    @right_callable = right_callable
   end
 
   def call(result)
@@ -396,13 +394,15 @@ end
 Use case:
 
 ```ruby
-Pipeline.new.tap do |pl|
+pipeline = Pipeline.new.tap do |pl|
   pl.log 'before discount'
   pl.step Discount.new(200)
   pl.log 'after discount'
   pl.step Tax.new(0.19)
   pl.debug!
 end
+
+pipeline.call(1000)
 ```
 
 This could be a nice little abstraction for middleware-style pipelines.
@@ -508,14 +508,16 @@ class Or
   include Chainable
 
   def initialize(left_callable, right_callable)
-    @left_callable, @right_callable = left_callable, right_callable
+    @left_callable = left_callable
+    @right_callable = right_callable
   end
 
   # if left callable returns Success, return it.
   # Otherwise try right callable.
   def call(result)
     result = @left_callable.call(result)
-    result.is_a?(Result::Success) ? result : @right_callable.call(result.success)
+    result.is_a?(Result::Success) ? result :
+      @right_callable.call(result.success)
   end
 end
 ```
