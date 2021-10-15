@@ -165,7 +165,7 @@ substract_discount = ->(result) {
 ```
 
 And the same for `add_tax`.
-Now the key: each Result subclass implements a `#map(callable)` Result interface.
+Now the key: each `Result` subclass implements a `#map(callable)` Result interface.
 
 ```ruby
 class Success < self
@@ -181,7 +181,7 @@ class Failure < self
 end
 ```
 
-What's all this about? Now we can chain pipeline steps using result sub types as glue.
+What's all this about? It means that we can now chain pipeline steps using result sub types as glue.
 
 ```ruby
 # Happy path
@@ -212,7 +212,8 @@ This is sometimes called [Railway oriented programming](https://vimeo.com/113707
 
 In the (professionally drawn) diagram above, once R2 returns a failure, it is propagated to the end of the pipeline, skipping R3, R4 and R5.
 
-The FP-curious reader might notice that this Result implementation is a type of monad. Depending on your domain you might want to use an [Option type](https://en.wikipedia.org/wiki/Option_type) instead, for example when processing lists where the output can be either a new list ("Some") or an empty list ("None"). See [this nice blog post](https://medium.com/@baweaver/functional-programming-in-ruby-flow-control-565bbdcdf2a2) for more in-depth Ruby examples. You might also be reminded of Promises in various languages, which share a lot with this approach.
+> The FP-curious reader might notice that this Result implementation is a type of monad.
+Depending on your domain you might want to use an [Option type](https://en.wikipedia.org/wiki/Option_type) instead, for example when processing lists where the output can be either a new list ("Some") or an empty list ("None"). See [this nice blog post](https://medium.com/@baweaver/functional-programming-in-ruby-flow-control-565bbdcdf2a2) for more in-depth Ruby examples. You might also be reminded of Promises in various languages, which share a lot with this approach.
 
 ### Back to declarative
 
@@ -408,7 +409,7 @@ This could be a nice little abstraction for middleware-style pipelines.
 
 ### Possibility 2: pseudo (runtime) type system
 
-What follows builds on the infrastructure described above, and is inspired by the [Dry-*](https://dry-rb.org/gems/dry-types/master/) set of Ruby gems. For real-world use of these ideas you can refer to those libraries, which are mature and heavily optimised for performance.
+> What follows builds on the infrastructure described above, and is inspired by the [Dry-*](https://dry-rb.org/gems/dry-types/master/) set of Ruby gems. For real-world use of these ideas you can refer to those libraries, which are mature and heavily optimised for performance.
 
 Let's start with a no-op step as a base to compose more specialised behaviour. This is the identity monad in the functional world.
 
