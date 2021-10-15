@@ -328,7 +328,7 @@ This is just so that we have the shorter `result.success(new_value)` and `result
 
 Note that these additions are only required in `Result::Success`, as that's the only type ever passed to step callables.
 
-### Possibility 1: declarative Pipeline class
+### Possibility 1: declarative Pipeline class
 
 We can add some extra infrastructure to have portable pipeline definitions.
 
