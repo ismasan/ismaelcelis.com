@@ -491,7 +491,7 @@ calculate_total = must_be_numeric >> substract_discount >> add_tax
 calculate_total.call('nope!') # Result::Failure('is not a Numeric')
 ```
 
-#### `#|`
+#### `#|`
 
 Here we implement the `or` logical operator by returning a custom callable.
 
