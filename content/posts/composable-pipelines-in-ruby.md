@@ -348,7 +348,7 @@ We can add some extra infrastructure to have portable pipeline definitions.
 pipeline1 = Pipeline.new do |pl|
   # register steps as callables
   pl.step Discount.new(200)
-	pl.step Tax.new(0.19)
+  pl.step Tax.new(0.19)
   # ... or blocks
   pl.step do |result|
     Logger.info "Got #{result.inspect}"
@@ -607,7 +607,7 @@ gte = ->(cents) {
 #   * if already USD, stop
 #   * else convert to USD
 # * finally validate that it's greater or equal than $1000.00
-money = (int_to_gbp || Types::Money) >> (is_usd | to_usd) >> gte(1000_00)
+money = (int_to_gbp | Types::Money) >> (is_usd | to_usd) >> gte(1000_00)
 
 money.call(1000_10) # Success(Money(1_368_58, 'USD'))
 money.call(Money.new(1000_00, 'USD')) # Success(Money(1000_00, 'USD'))
