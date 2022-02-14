@@ -256,6 +256,20 @@ calculate_total.call(100) # Failure(100, 'Discount is greater than amount')
 
 Now we'll create a `Chainable` mixin to implement `#>>`.
 
+```ruby
+module Chainable
+  def >>(other)
+    Chain.new(self, other)
+  end
+end
+
+# Chain is chainable
+class Chain
+  include Chainable
+  # ..etc
+end
+```
+
 Chains can produce new chains:
 
 ```ruby
