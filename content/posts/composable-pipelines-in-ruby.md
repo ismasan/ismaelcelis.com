@@ -345,7 +345,7 @@ Note that these additions are only required in `Result::Success`, as that's the 
 We can add some extra infrastructure to have portable pipeline definitions.
 
 ```ruby
-pipeline1 = Pipeline.new do |pl|
+pipeline1 = Pipeline.new.tap do |pl|
   # register steps as callables
   pl.step Discount.new(200)
   pl.step Tax.new(0.19)
@@ -381,7 +381,7 @@ end
 `Pipeline` is itself composable, since it implements the same `#call(Success) Success | Failure` interface.
 
 ```ruby
-pipeline2 = Pipeline.new do |pl|
+pipeline2 = Pipeline.new.tap do |pl|
   pl.step pipeline1 # treat a Pipeline like a regular Step
   pl.step FinalStep
 end
