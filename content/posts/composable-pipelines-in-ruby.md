@@ -98,7 +98,7 @@ We could instead return a special error object.
 
 ```ruby
 if DISCOUNT > amount
-  Error.new('amount is greater than amount')
+  Error.new('discount is greater than amount')
 else
   amount - DISCOUNT
 end
