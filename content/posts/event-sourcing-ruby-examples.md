@@ -2,7 +2,7 @@
 draft = false
 date = 2022-06-27T17:00:00+01:00
 title = "Event Sourcing from the ground up, with Ruby examples, part 1"
-description = "Composable data pipelines in Ruby, using Railway-oriented programming"
+description = "Event Sourcing explained, with Ruby examples"
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "functional", "eventsourcing", "cqrs"]
