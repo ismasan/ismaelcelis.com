@@ -12,7 +12,8 @@ series = []
 +++
 
 
-![Patterns](/images/2022/dots.jpg)
+In this series I'll go over the basic concepts in Event Sourcing.
+The code examples are in Ruby, but the general principles should apply in any language.
 
 ## What's Event Sourcing
 
