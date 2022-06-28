@@ -17,8 +17,8 @@ Read the first part: [Event Sourcing from the ground up, with Ruby examples, par
 The Event Store interface is the canonical data store in event sourcing, and it’s in charge of persisting and retrieving events produced by your system.
 
 ```typescript
-#append_to_stream(stream_id String, events Enum<Event>) boolean
-#read_from_stream(stream_id String) Enum<Event>
+#append_to_stream(stream_id String, events List<Event>) boolean
+#read_from_stream(stream_id String) List<Event>
 ```
 
 The `stream_id` is the identity of an entity in your domain. A Product, User, Shopping Cart, Account, etc. Whatever entity whose state you want to track via a log of sequential events.
