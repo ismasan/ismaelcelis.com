@@ -113,7 +113,7 @@ Regardless, at a conceptual level there’s a separation of concerns here: entit
 
 ### Next:
 
-- The EventStore interface
+- [The Event Store interface](/posts/event-sourcing-ruby-event-store/)
 - The Command layer
 - Projections and CQRS
 - Reactors and subscribers
