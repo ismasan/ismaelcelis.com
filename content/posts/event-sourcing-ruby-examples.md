@@ -17,6 +17,43 @@ The code examples are in Ruby, but the general principles should apply in any la
 
 ## What's Event Sourcing
 
+The essential idea is that the state of objects in an app is tracked by a sequence of events describing discrete changes to those objects.
+For every state change, an event is produced and appended to a log in storage.
+Conversely, the current state of objects in the app is obtained by "replaying" all relevant events from the log and aggregating the described changes onto the object.
+
+![basic event sourcing state management flow](/images/2022/event-sourcing-flow-1.png)
+
+There's no database tables, no SQL joins, no CRUD. Effectively the Audit Trail, an _ordered log of events_, is the canonical data backbone from which all current state is derived.
+
+> This is a strange concept if you come from the CRUD world, but it's actually an omnipresent one: Git, database replication logs and double-entry accounting ledgers all work in a similar way.
+
+As an illustration, take your latest bank account statement. The main data structure is an ordered, append-only log of credits and debits to your account. Any current state (your balance) is derived by adding up these historical events, in order.
+
+```
+---------------------------------------------
+Credits and debits / the "events"
+---------------------------------------------
+* 2022-06-01T10:00:00 $3000.00 salary
+* 2022-06-01T11:20:10 -$5.00 coffee
+* 2022-06-02T18:50:00 -$50.50 groceries
+* 2022-06-06T18:50:00 -$1000.00 rent
+* 2022-06-08T15:00:00 $300.00 tax refund
+
+---------------------------------------------
+Balance and aggregations / the "projection"
+---------------------------------------------
+Balance to date: $2,244.50
+Total credits: $3,300.00
+Total debits: -$1,055.50
+```
+
+Your bank statement is an Event-Sourced entity!
+
+In this series I'll summarise the basic concepts and general interfaces that go into building an event-sourced system, as well as some of the implications to system design.
+This post is _not_ about specific libraries, frameworks or implementation details.
+
+## The how of Event Sourcing
+
 At its core, Event Sourcing consists of a single function that, given an initial state and an “event”, returns an updated version of the state.
 
 ```
