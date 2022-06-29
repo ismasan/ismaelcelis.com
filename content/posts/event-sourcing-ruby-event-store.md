@@ -14,6 +14,8 @@ series = []
 > This is part of a series on Event Sourcing concepts, with Ruby examples.
 Read the first part: [Event Sourcing from the ground up, with Ruby examples, part 1](/posts/event-sourcing-ruby-examples/).
 
+![Event Store interface](/images/2022/event-sourcing-event-store-1.png)
+
 The Event Store interface is the canonical data store in event sourcing, and it’s in charge of persisting and retrieving events produced by your system.
 
 ```typescript
