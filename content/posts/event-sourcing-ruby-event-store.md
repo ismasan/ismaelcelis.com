@@ -40,7 +40,7 @@ product = events.reduce(blank_product, &projector)
 Things to note:
 
 - The EventStore guarantees event ordering for a single `stream_id` (entity). This is usually done by tagging stored events with a per-stream incremental sequence number. Per-entity event streams can be thought of (and are usually implemented as) discrete storage partitions with guaranteed ordering.
-- In other words, at the domain level the Entity should be thought of as the “transactional unit”, where the order of events matters. An `UserUpdated` event can’t ever happen after `UserDeleted` for the same User entity, but the exact order in which those two event types were issued for different user entities is not critical, and not a practical guarantee at scale.
+- In other words, at the domain level the Entity should be thought of as the “transactional unit”, where the order of events matters. A `UserUpdated` event can’t ever happen after `UserDeleted` for the same User entity, but the exact order in which those two event types were issued for different user entities is not critical, and not a practical guarantee at scale.
 - I’m calling the argument `stream_id` and not `entity_id`, even if it most likely will refer to a specific entity (ex. a specific product) in your system. However, from the standpoint of the Event Store interface, it doesn’t actually need to know that a stream of events will be used to reconstitute a domain entity. All it cares about it storing and retrieving an ordered stream of events. Later we’ll see that event streams can also be used to track broader projections in a system, ex. “sales report 2022”.
 
 ### Optimistic locking
