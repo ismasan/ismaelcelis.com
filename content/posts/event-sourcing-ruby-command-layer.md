@@ -26,7 +26,7 @@ In event-sourced apps it can take many forms, but the general flow is this:
 4. Produce new events, apply them to the entity via the projector function.
 5. Store the newly produced events back into the Event Store.
 
-![Basic command flow](/images/2022/event-sourcing-command-diagram-1.gif)
+![Basic command flow](/images/2022/event-sourcing-command-diagram-1.svg)
 
 For example, a command function to update a product’s price.
 
