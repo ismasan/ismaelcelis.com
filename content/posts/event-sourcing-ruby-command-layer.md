@@ -20,10 +20,11 @@ It’s not by any means unique to event-sourced apps, but present in all kinds o
 
 In event-sourced apps it can take many forms, but the general flow is this:
 
-1. Reconstitute an entity’s current state from the Event Store, by feeding an initial entity state and any events in storage to the projector function.
-2. Inspect the current state, along with whatever input your command expects, run any validations needed, fetch any extra data needed to fulfill the command, and decide if any new events need to be issued.
-3. Produce new events, apply them to the entity via the projector function.
-4. Store the newly produced events back into the Event Store.
+1. Fetch an entity's events currently stored in the Event Store.
+2. Reconstitute an entity’s current state by feeding an initial entity state and events in storage to the projector function.
+3. Inspect the current state, along with whatever input your command expects, run any validations needed, fetch any extra data needed to fulfill the command, and decide if any new events need to be issued.
+4. Produce new events, apply them to the entity via the projector function.
+5. Store the newly produced events back into the Event Store.
 
 ![Basic command flow](/images/2022/event-sourcing-command-diagram-1.gif)
 
@@ -33,18 +34,19 @@ For example, a command function to update a product’s price.
 BLANK_PRODUCT = { name: '', price: 0, brand: '' }
 
 def update_product_price(product_id, new_price)
-  # 1. Reconstitute current product state from stored events
+  # 1. Fetch previous events from storage
   events = EventStore.read_from_stream(product_id)
+  # 2. Reconstitute current product state from stored events
   product = events.reduce(BLANK_PRODUCT, &ProductProjector)
 
-  # 2. Run any domain validations before issuing new events
+  # 3. Run any domain validations before issuing new events
   raise ZeroPriceError, "product price must be above zero" unless new_price.positive?
   # Rely on current state to check any domain invariants
   if new_price < 1000 && product.brand == 'Apple'
     raise ApplePriceTooLowError, "New price is suspiciously low for an Apple product"
   end
 
-  # 3. If all is good, produce new events
+  # 4. If all is good, produce new events
   new_events = [
     PriceUpdated.new(new_price)
   ]
@@ -53,7 +55,7 @@ def update_product_price(product_id, new_price)
   product = new_events.reduce(product, &ProductProjector)
   # Any more validations and events here...
 
-  # 4. Store the new events back into the Event Store
+  # 5. Store the new events back into the Event Store
   EventStore.append_to_stream(product_id, new_events)
 
   # Return the updated product along with new events produced
@@ -239,7 +241,7 @@ CurrencyChanged = Struct.new(:id, :command_id, :source_currency, :target_currenc
 PriceUpdated = Struct.new(:id, :command_id, :price)
 ```
 
-All things set up correctly, we gain a full audit trail of both user _intents_ and the resulting events.
+All things set up correctly, we gain a full audit trail of both _user intents_ and the resulting events.
 
 ```
 # 2022-06-01T10:11:00 [product-123] user xyz attempts to change currency to GBP
@@ -247,10 +249,12 @@ All things set up correctly, we gain a full audit trail of both user _intents_ a
 # -- 2022-06-01T10:11:00 [product-123] price updated to GBP 820.00
 ```
 
+This helps paint a full picture of the system's behaviour.
+
 > In this model, commands and events are both treated as _messages_ in storage, but at the application level they retain their distinct semantics and are handled by different layers.
 
-Another advantage of this, especially for multi-service systems, is that other services can pull commands from the Event Store and handle them on their side, possibly resulting in new events.
-This approach effectively uses the Event Store as an asynchronous command bus or message broker. You can read about [CQRS and Sagas](https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591569(v=pandp.10)) for more.
+Another advantage of this, especially for multi-service systems, is that other services can pull commands from the Event Store and handle them on their side, possibly resulting in new events, and event new commands, committed to the store.
+This approach effectively uses the Event Store as an asynchronous command bus or message broker for inter-system collaboration. You can read about [CQRS and Sagas](https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591569(v=pandp.10)) for more.
 
 ### Things to note:
 

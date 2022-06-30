@@ -84,7 +84,7 @@ Technically we’ve now covered the totality of Event Sourcing: apply a sequenti
 
 But we need quite a lot more concepts for Event Sourcing to be usable in real systems.
 
-- The Command layer
+- [The Command layer](/posts/event-sourcing-ruby-command-layer/)
 - Projections and CQRS
 - Reactors and subscribers
 
