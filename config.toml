@@ -1,6 +1,7 @@
 baseURL = 'https://ismaelcelis.com/'
 languageCode = 'en-us'
 title = 'Ismael Celis'
+enableRobotsTXT = true
 theme = "paper"
 [params]
   disableHLJS = true                         # don't use highlight.js
