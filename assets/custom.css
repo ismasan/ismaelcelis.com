@@ -14,3 +14,26 @@ body .post-entry a:hover {
   text-decoration: underline;
 }
 
+/* heading anchors (JS generated)
+ * ---------------------------------*/
+h3.has-anchor, h2.has-anchor {
+  position: relative;
+}
+h3.has-anchor a.heading-anchor,
+h2.has-anchor a.heading-anchor {
+  position: absolute;
+  display: block;
+  width: 24px;
+  height: 24px;
+  left: -26px;
+  border-bottom-width: 0;
+  color: gray;
+}
+h3.has-anchor a.heading-anchor::before,
+h2.has-anchor a.heading-anchor::before {
+  content: '→';
+}
+h3.has-anchor a.heading-anchor:hover,
+h2.has-anchor a.heading-anchor:hover {
+  color: orange;
+}
