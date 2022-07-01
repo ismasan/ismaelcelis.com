@@ -26,7 +26,7 @@ In event-sourced apps it can take many forms, but the general flow is this:
 4. Produce new events, apply them to the entity via the projector function.
 5. Store the newly produced events back into the Event Store.
 
-![Basic command flow](/images/2022/event-sourcing-command-diagram-1.svg)
+![Basic command flow](/images/2022/event-sourcing-command-diagram-1.gif)
 
 For example, a command function to update a product’s price.
 
@@ -211,6 +211,12 @@ What’s more, you get a full audit trail of any changes in the state of the wor
 # 2022-06-01T10:11:00 [product-123] price updated to GBP 820.00
 ```
 
+### Things to note:
+
+- Projecting events gets you the same results every time. Running commands does not, necessarily.
+- While events represent “facts” that happened in your domain, commands represent “intents”, and as such are not guaranteed to succeed or lead to any events being produced.
+- Because they are *intents*, commands should be thought of as the closest component to the end user in terms of their semantics and naming. Ex. in web apps they often map directly to HTML forms, and map well to task-based UIs.
+
 ### Committing commands to history
 
 Previously I mentioned that one approach to the command layer takes the form of event-like value objects.
@@ -253,14 +259,38 @@ This helps paint a full picture of the system's behaviour.
 
 > In this model, commands and events are both treated as _messages_ in storage, but at the application level they retain their distinct semantics and are handled by different layers.
 
-Another advantage of this, especially for multi-service systems, is that other services can pull commands from the Event Store and handle them on their side, possibly resulting in new events, and event new commands, committed to the store.
+Another advantage of this, especially for multi-service systems, is that other services can pull commands from the Event Store and handle them on their side, possibly resulting in new events, and even new commands, committed to the store.
 This approach effectively uses the Event Store as an asynchronous command bus or message broker for inter-system collaboration. You can read about [CQRS and Sagas](https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591569(v=pandp.10)) for more.
 
-### Things to note:
+### Pushing the infrastructure to the margins
+Most of the code examples in this article handle fetching and committing events to the store explicitely as part of the command code.
+This can be unavoidable, and even desirable, in command code for CRUD apps, or anywhere where domain objects must interact in heterogeneous ways with one or more persistence layers.
 
-- Projecting events gets you the same results every time. Running commands does not, necessarily.
-- While events represent “facts” that happened in your domain, commands represent “intents”, and as such are not guaranteed to succeed or lead to any events being produced.
-- Because they are *intents*, commands should be thought of as the closest component to the end user in terms of their semantics and naming. Ex. in web apps they often map directly to HTML forms, and map well to task-based UIs.
+But Event Sourcing gives us a clear boundary between domain logic and persistence, in the form of a simple dataflow and a uniform two-method interface in the Event Store.
+All commands interact with the persistence layer in one way, and one way only: they produce a list of new events to append to the Event Store.
+
+This means that we can separate concerns within the command layer into domain logic for each use case, on one hand, and the generalised persistence infrastructure on the other.
+
+![domain and infrastructure components](/images/2022/event-sourcing-command-infra-layer.png)
+
+The implementation of this can take many forms, but its value becomes apparent if we think of how these simpler commands could be tested.
+
+```ruby
+describe UpdateProductCommand do
+  specify 'given a product and a new price, it returns the right events' do
+    product = { price: 1000 }
+    events = UpdateProductCommand.call(product, price: 2000)
+
+    expect(events).to eq([
+      PriceUpdated.new(2000)
+    ])
+  end
+end
+```
+
+Given current state and user inputs, we expect one or more events in return. We test the domain layer by asserting its behaviour in the form of events. The details of persistence can be pushed out of the way, into a generic infrastructure layer.
+
+What's really nice about this is that we're effectively "flattening" the entire behaviour of a system into a well defined specification, a protocol of sorts that exists at a single layer of abstraction: a list of commands and their corresponding events.
 
 ### In the wild: command and entity mashups
 Some libraries and frameworks out there merge entities and command handling, such that commands are just method calls in the entities themselves.
