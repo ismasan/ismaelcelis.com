@@ -213,7 +213,7 @@ What’s more, you get a full audit trail of any changes in the state of the wor
 # 2022-06-01T10:11:00 [product-123] price updated to GBP 820.00
 ```
 
-Commands are actions _now_. Events are the historical trail left behind by commands.
+Commands are actions to run _now_. Events are the historical trail left behind by those actions.
 
 ### Things to note:
 
