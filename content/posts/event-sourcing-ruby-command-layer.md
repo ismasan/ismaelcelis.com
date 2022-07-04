@@ -2,7 +2,7 @@
 draft = false
 date = 2022-07-04T10:00:00+01:00
 title = "Event Sourcing with Ruby examples. The Command layer."
-description = "Event Sourcing explained, with Ruby examples: The Command layer."
+description = "Event Sourcing explained, with Ruby examples: The Command Layer."
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "eventstore", "eventsourcing", "cqrs"]
