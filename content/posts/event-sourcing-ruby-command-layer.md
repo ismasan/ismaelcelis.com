@@ -1,6 +1,6 @@
 +++
 draft = false
-date = 2022-06-29T10:00:00+01:00
+date = 2022-07-04T10:00:00+01:00
 title = "Event Sourcing with Ruby examples. The Command layer."
 description = "Event Sourcing explained, with Ruby examples: The Command layer."
 slug = ""
@@ -76,6 +76,8 @@ An entity is sprung into life in your command’s memory just to let you interro
 In the example above we rely on the entity to find if the product at hand is by Apple, in which case we validate the minimum price.
 
 This also guides the reasoning when designing entities in such a system. They should be whatever shape and data required to answer whatever questions are pertinent as a pre-requisite to changing state in your system.
+
+For this reason, entitites in event-sourced systems tend to follow the [Aggregate pattern](https://martinfowler.com/bliki/DDD_Aggregate.html), where a top-level "Aggregate root" acts as a gateway to changes in an entire graph of related objects. The root entity is the transactional unit.
 
 ### Commands and CRUD
 
@@ -211,6 +213,8 @@ What’s more, you get a full audit trail of any changes in the state of the wor
 # 2022-06-01T10:11:00 [product-123] price updated to GBP 820.00
 ```
 
+Commands are actions _now_. Events are the historical trail left behind by commands.
+
 ### Things to note:
 
 - Projecting events gets you the same results every time. Running commands does not, necessarily.
@@ -228,7 +232,11 @@ ChangeProductCurrency = Struct.new(:user, :product_id, :target_currency)
 This suggests that commands could, too, be serialised and committed to the Event Store.
 
 ```ruby
-EventStore.append_to_stream("product-123", [change_product_currency, currency_changed, price_updated])
+EventStore.append_to_stream("product-123", [
+  change_product_currency,
+  currency_changed,
+  price_updated
+])
 ```
 
 But wait. Why would we do this? Doesn't this blur the whole command/events distinction I've been making all along?
@@ -255,7 +263,7 @@ All things set up correctly, we gain a full audit trail of both _user intents_ a
 # -- 2022-06-01T10:11:00 [product-123] price updated to GBP 820.00
 ```
 
-This helps paint a full picture of the system's behaviour.
+This helps paint a fuller picture of the system's behaviour.
 
 > In this model, commands and events are both treated as _messages_ in storage, but at the application level they retain their distinct semantics and are handled by different layers.
 
@@ -267,7 +275,7 @@ Most of the code examples in this article handle fetching and committing events 
 This can be unavoidable, and even desirable, in command code for CRUD apps, or anywhere where domain objects must interact in heterogeneous ways with one or more persistence layers.
 
 But Event Sourcing gives us a clear boundary between domain logic and persistence, in the form of a simple dataflow and a uniform two-method interface in the Event Store.
-All commands interact with the persistence layer in one way, and one way only: they produce a list of new events to append to the Event Store.
+All commands interact with the persistence layer in the exact same way: they fetch commands for an entity, and then append new commands for the same entity.
 
 This means that we can separate concerns within the command layer into domain logic for each use case, on one hand, and the generalised persistence infrastructure on the other.
 
@@ -288,7 +296,7 @@ describe UpdateProductCommand do
 end
 ```
 
-Given current state and user inputs, we expect one or more events in return. We test the domain layer by asserting its behaviour in the form of events. The details of persistence can be pushed out of the way, into a generic infrastructure layer.
+Given current state and user inputs, we expect one or more events in return. We test the domain layer by asserting its behaviour in the form of events produced. The details of persistence can be pushed out of the way, into a generic infrastructure layer.
 
 What's really nice about this is that we're effectively "flattening" the entire behaviour of a system into a well defined specification, a protocol of sorts that exists at a single layer of abstraction: a list of commands and their corresponding events.
 
