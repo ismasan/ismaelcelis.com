@@ -300,6 +300,8 @@ Given current state and user inputs, we expect one or more events in return. We 
 
 What's really nice about this is that we're effectively "flattening" the entire behaviour of a system into a well defined specification, a protocol of sorts that exists at a single layer of abstraction: a list of commands and their corresponding events.
 
+> This approach potentially opens the door to composable command pipelines, where a broad, CRUD-oriented command such as `UpdateUser` can be composed of more fine-grained steps in a chain (`UpdateEmail`, `UpdateName`, etc). Using [Railway-style pipelines](/posts/composable-pipelines-in-ruby/) can be a good model to glue those steps and handling error cases.
+
 ### In the wild: command and entity mashups
 Some libraries and frameworks out there merge entities and command handling, such that commands are just method calls in the entities themselves.
 
