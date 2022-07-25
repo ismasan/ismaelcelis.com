@@ -275,7 +275,7 @@ Most of the code examples in this article handle fetching and committing events 
 This can be unavoidable, and even desirable, in command code for CRUD apps, or anywhere where domain objects must interact in heterogeneous ways with one or more persistence layers.
 
 But Event Sourcing gives us a clear boundary between domain logic and persistence, in the form of a simple dataflow and a uniform two-method interface in the Event Store.
-All commands interact with the persistence layer in the exact same way: they fetch commands for an entity, and then append new commands for the same entity.
+All commands interact with the persistence layer in the exact same way: they fetch events for an entity, and then append new events for the same entity.
 
 This means that we can separate concerns within the command layer into domain logic for each use case, on one hand, and the generalised persistence infrastructure on the other.
 
