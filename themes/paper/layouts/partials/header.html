@@ -35,17 +35,4 @@
     {{ end }}
   </nav>
   {{ end }}<!---->
-
-  {{ with $.Scratch.Get "social-list" }}
-  <nav class="social">
-    {{ range . }}
-    <a
-      class="{{ . }}"
-      style="--url: url(./{{ . }}.svg)"
-      href="https://{{ . }}.com/{{ site.Params.Get . }}"
-      target="_blank"
-    ></a>
-    {{ end }}
-  </nav>
-  {{ end }}
 </header>

@@ -7,4 +7,6 @@ theme = "paper"
   disableHLJS = true                         # don't use highlight.js
   twitter = 'ismasan'                # twitter.com/YOUR_TWITTER_ID
   github = 'ismasan'                  # github.com/YOUR_GITHUB_ID
-
+  env = 'production'                  # environment: production, development
+[author]
+  name = "Ismael Celis"
