@@ -2,7 +2,7 @@
 draft = false
 date = 2022-07-04T10:00:00+01:00
 title = "Event Sourcing with Ruby examples. The Command layer."
-description = "Event Sourcing explained, with Ruby examples: The Command Layer."
+description = "The Command Layer is the place where business logic happens, user input is handled and decisions are made. In this article I explore the role of the Command Layer in event-sourced systems"
 images = ["/images/2022/event-sourcing-command-diagram-1.gif"]
 slug = ""
 authors = ["Ismael Celis"]
