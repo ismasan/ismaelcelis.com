@@ -2,7 +2,8 @@
 draft = false
 date = 2022-06-27T17:00:00+01:00
 title = "Event Sourcing from the ground up, with Ruby examples, part 1"
-description = "Event Sourcing explained, with Ruby examples"
+description = "In this series I’ll go over the basic concepts in Event Sourcing. The code examples are in Ruby, but the general principles should apply in any language."
+images = ["/images/2022/event-sourcing-flow-1.png"]
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "functional", "eventsourcing", "cqrs"]
