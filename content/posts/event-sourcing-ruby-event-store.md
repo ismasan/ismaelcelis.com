@@ -2,7 +2,8 @@
 draft = false
 date = 2022-06-28T10:00:00+01:00
 title = "Event Sourcing with Ruby examples. The Event Store interface."
-description = "Event Sourcing explained, with Ruby examples: The Event Store interface."
+description = "The Event Store interface is the canonical data store in event sourcing, and it’s in charge of persisting and retrieving events produced by your system."
+images = ["/images/2022/event-sourcing-event-store-1.png"]
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "eventstore", "eventsourcing", "cqrs"]
