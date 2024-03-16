@@ -3,6 +3,7 @@ draft = false
 date = 2021-10-14T11:32:35+01:00
 title = "Railway-style composable pipelines in Ruby"
 description = "Composable data pipelines in Ruby, using Railway-oriented programming"
+images = ["/images/2022/railway-oriented-pipelines-front.png"]
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "functional", "pipelines", "composition", "declarative"]
