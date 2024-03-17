@@ -1,6 +1,7 @@
 /*
  * Paper
- * A simple, clean, flexible Hugo theme
+* A simple, clean, flexible Hugo theme
+      <span>{{ .ReadingTime }} minutes read</span>
  * https://github.com/nanxiaobei/hugo-paper
  * Designed by 南小北 (https://lee.so/)
  * Updated in 2021.8.24
@@ -321,10 +322,16 @@ img {
   font-size: 3rem;
 }
 
-.post-entry time {
+.post-entry time,
+.post-entry span.meta {
   flex-shrink: 0;
   font-size: 1.7rem;
   color: var(--air);
+}
+
+.post-entry span.meta::before {
+  content: '·';
+  margin-inline: .8rem;
 }
 
 .post-entry a {
