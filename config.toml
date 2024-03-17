@@ -10,3 +10,5 @@ theme = "paper"
   env = 'production'                  # environment: production, development
 [author]
   name = "Ismael Celis"
+[markup.goldmark.renderer]
+  unsafe = true
