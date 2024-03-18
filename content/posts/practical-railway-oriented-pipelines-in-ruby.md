@@ -742,7 +742,7 @@ end
 
 ## Testability
 
-Testing any complex workflow can be challening. Composable pipelines allows me to use a "divide and conquer" approach to testing.
+Testing any complex workflow can be challenging. Composable pipelines allows me to use a "divide and conquer" approach to testing.
 
 1. Unit test each step in isolation.
 
