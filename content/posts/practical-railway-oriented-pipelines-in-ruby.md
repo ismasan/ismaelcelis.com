@@ -682,7 +682,7 @@ pl.step FullTextSearch
 ### Durable execution
 
 You can use it to build durable execution workflows, where each step is a task that can be retried or rolled back.
-This can be used to build rebust fault-tolerant or multi-step operations.
+This can be used to build rebust and fault-tolerant operations. For example background jobs, or long-running [sagas](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
 ```ruby
 HolidayBookingSaga = Pipeline.new do |pl|
