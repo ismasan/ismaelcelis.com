@@ -2,8 +2,8 @@
 draft = false
 date = 2024-03-17T12:19:16Z
 title = "Practical Railway-Oriented Pipelines in Ruby"
-description = "A simplified approach to building composable data pipelines in Ruby."
-images = ["/images/2022/railway-oriented-pipelines-front.png"]
+description = "A simplified approach to building composable data pipelines in Ruby, with examples and use cases."
+images = ["/images/2024/practical-railway-oriented-pipelines-ruby.png"]
 slug = ""
 authors = ["Ismael Celis"]
 tags = ["ruby", "design patterns", "functional", "pipelines", "composition"]
@@ -588,7 +588,7 @@ class MyPipeline < Pipeline
 end
 ```
 
-A framework-agnostic implementation for that is included in the [code gist]()
+A framework-agnostic implementation for that is included in the [code gist](https://gist.github.com/ismasan/0bdcc76c2ea48f4259b38fafe131edb8)
 
 > Middleware steps might look similar to regular steps, but they are not.
 > Each registered middleware step wraps around every regular step, including in nested pipelines.
@@ -642,8 +642,8 @@ end
 ```
 
 <ul class="execution-trace">
-    <li class="warning">1. <code>Expensive Operation 1</code><span class="note">cached</span></li>
-    <li class="warning">2. <code>Expensive Operation 2</code><span class="note">cached</span></li>
+    <li class="warning">1. <code>Expensive Operation 1</code><span class="note">cached, skipped</span></li>
+    <li class="warning">2. <code>Expensive Operation 2</code><span class="note">cached, skipped</span></li>
     <li class="running">3. <code>Expensive Operation 3</code><span class="note">not cached, running</span></li>
     <li>4. <code>ExpensiveOperation4</code><span class="note">pending</span></li>
 </ul>
@@ -659,10 +659,117 @@ end
 pl.step OkStep
 ```
 
-## Durable execution
+## Other use cases
 
-## Concurrent execution
+I've found that these pipelines make it simple to assemble a wide range of processing workflows big and small. Most specialisation can be contained in the steps themselves, and the pipeline class can be kept simple and generic.
+
+### Query builders
+
+You can use it to build complex queries for databases or APIs.
+
+```ruby
+pl.step do |result|
+  query = result.value # An ActiveRecord::Relation or a Sequel::Dataset
+  account_id = result.input[:account_id]
+  query = query.where(account_id:) if account_id
+  result.continue(query)
+end
+
+# Composable query components
+pl.step FullTextSearch
+```
+
+### Durable execution
+
+You can use it to build durable execution workflows, where each step is a task that can be retried or rolled back.
+This can be used to build rebust fault-tolerant or multi-step operations.
+
+```ruby
+HolidayBookingSaga = Pipeline.new do |pl|
+  # Custom middleware to store the result of last successful step
+  # In case of failure, the pipeline can be resumed from the last successful step
+  middleware DurableExecution.new(store: Redis.new)
+
+  pl.step BookFlights
+  pl.step BookHotel
+  pl.step BookCarRental
+  pl.step SendConfirmationEmail
+end
+```
+
+### Concurrent execution
+
+It's reasonably straightforward to build a pipeline that runs steps concurrently, for example to optimise I/O-bound operations.
+
+```ruby
+HolidayBookingSaga = Pipeline.new do |pl|
+  # .. etc
+
+  # Run these steps concurrently, then collect their results in order.
+  # For example using Fibers or Threads.
+  # This block can implement _all_ or _any_ semantics.
+  pl.concurrent do |c|
+    c.step BookFlights
+    c.step BookHotel
+    c.step BookCarRental
+  end
+
+  # Send email once all bookings are confirmed
+  pl.step SendConfirmationEmail
+end
+```
+
+### HTTP handlers
+
+In Ruby we have plenty of incredible web frameworks to choose from, but a pipeline-oriented approach to web handling could be a good fit for some use cases. A bit like Elixir's [Plug](https://hexdocs.pm/plug/readme.html).
+
+```ruby
+module API
+  CreateUserHandler = HTTPPipeline.new do |pl|
+    pl.input do
+      field(:name).type(:string).required
+      field(:email).type(:string).required
+    end
+
+    pl.step ValidateUserInput
+    pl.step CreateUser
+    pl.step SendWelcomeEmail
+    pl.respond_with(201, :created)
+    pl.respond_with(400, :bad_request)
+  end
+end
+```
 
 ## Testability
 
+Testing any complex workflow can be challening. Composable pipelines allows me to use a "divide and conquer" approach to testing.
+
+1. Unit test each step in isolation.
+
+```ruby
+step = MultiplyBy.(2)
+initial_result = Result.continue([1, 2, 3, 4])
+result = step.call(initial_result)
+expect(result.value).to eq([2, 4, 6, 8])
+```
+
+2. Test that the pipeline is composed correctly.
+
+```ruby
+# An RSpec helper to assert that a pipeline is composed of a sequence of steps
+expect(NumberCruncher).to be_composed_of_steps(
+  ValidateSetSize,
+  MultiplyBy.(2),
+  LimitSet
+)
+```
+
 ## Conclusion
+
+Like anything, this approach has its trade-offs. If prefer inheritance over composition, or the processing required can't be easily broken down into steps, then this approach might not be the best fit.
+
+In general, I've found it provides a _simple_ mental model to reason about problems (in [the Rick Hickey sense](https://www.youtube.com/watch?v=SxdOUGdseq4)).
+
+Any operation that can be coerced into complying with the [Monoid Laws](https://blog.ploeh.dk/2017/10/06/monoids/) can be a good candidate.
+
+The basic implementation used in this article is [here](https://gist.github.com/ismasan/0bdcc76c2ea48f4259b38fafe131edb8).
