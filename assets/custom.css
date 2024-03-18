@@ -37,3 +37,28 @@ h3.has-anchor a.heading-anchor:hover,
 h2.has-anchor a.heading-anchor:hover {
   color: orange;
 }
+
+.related-articles {
+  margin-top: 4rem;
+  border-top: solid 1px var(--fog);
+  padding-top: var(--y-gap);
+}
+
+.related-articles p.more {
+  margin-bottom: 2rem;
+}
+.related-articles .post-entry:first-of-type {
+  margin-top: 0
+}
+.related-articles .post-entry {
+  padding-block: 1rem;
+}
+.related-articles .post-entry a {
+  font-size: 2rem;
+  line-height: 1.3;
+  text-decoration: underline;
+}
+
+.related-articles .post-entry a:hover {
+  color: var(--lit);
+}

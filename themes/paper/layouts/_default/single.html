@@ -16,25 +16,23 @@
   <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-  <!-- Post Tags -->
-  {{ if .Params.tags }}
-  <footer class="post-tags">
-    {{ range .Params.tags }} {{ $href := print (absURL "tags/") (urlize .) }}
-    <a href="{{ $href }}">{{ . }}</a>
-    {{ end }}
-  </footer>
-  {{ end }}
+  <!-- related articles -->
+  {{- range first 1 (where (where .Site.Pages ".Params.tags" "intersect" .Params.tags) "Permalink" "!=" .Permalink) -}}
+      {{- $.Scratch.Set "has_related" true -}}
+  {{- end -}}
 
-  <!-- Post Nav -->
-  {{ $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}<!---->
-  {{ if and (gt (len $pages) 1) (in $pages . ) }}
-  <nav class="post-nav">
-    {{ with $pages.Next . }}
-    <a class="prev" href="{{ .Permalink }}"><span>←</span><span>{{ .Name }}</span></a>
-    {{ end }} {{ with $pages.Prev . }}
-    <a class="next" href="{{ .Permalink }}"><span>{{ .Name }}</span><span>→</span></a>
-    {{ end }}
-  </nav>
+  {{ if $.Scratch.Get "has_related" }}
+      <footer class="related-articles">
+          <p class="more">Other articles &hellip;</p>
+          {{- $num_to_show := .Site.Params.related_content_limit | default 3 -}}
+          {{ range first $num_to_show (where (where .Site.Pages ".Params.tags" "intersect" .Params.tags) "Permalink" "!=" .Permalink) }}
+            <article class="post-entry">
+              <a href="{{ .Permalink }}">{{ .Title }}</a>
+              <time>{{ .Date | time.Format ":date_medium" }}</time>
+              <span class="meta">{{ .ReadingTime }} minutes read</span>
+            </article>
+          {{ end }}
+      </footer>
   {{ end }}
 
   <!-- Disqus -->
