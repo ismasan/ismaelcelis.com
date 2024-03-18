@@ -17,15 +17,11 @@
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
   <!-- related articles -->
-  {{- range first 1 (where (where .Site.Pages ".Params.tags" "intersect" .Params.tags) "Permalink" "!=" .Permalink) -}}
-      {{- $.Scratch.Set "has_related" true -}}
-  {{- end -}}
-
-  {{ if $.Scratch.Get "has_related" }}
+  {{ $related := .Site.RegularPages.Related . | first 5 }}
+  {{ with $related }}
       <footer class="related-articles">
           <p class="more">Other articles &hellip;</p>
-          {{- $num_to_show := .Site.Params.related_content_limit | default 3 -}}
-          {{ range first $num_to_show (where (where .Site.Pages ".Params.tags" "intersect" .Params.tags) "Permalink" "!=" .Permalink) }}
+          {{ range . }}
             <article class="post-entry">
               <a href="{{ .Permalink }}">{{ .Title }}</a>
               <time>{{ .Date | time.Format ":date_medium" }}</time>

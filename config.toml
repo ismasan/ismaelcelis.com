@@ -8,7 +8,18 @@ theme = "paper"
   twitter = 'ismasan'                # twitter.com/YOUR_TWITTER_ID
   github = 'ismasan'                  # github.com/YOUR_GITHUB_ID
   env = 'production'                  # environment: production, development
-  related_content_limit = 5           # number of related content to show
+[related]
+  includeNewer = true
+  threshold = 10
+  toLower = true
+[[related.indices]]
+    applyFilter = false
+    cardinalityThreshold = 0
+    name = 'tags'
+    pattern = ''
+    toLower = true
+    type = 'basic'
+    weight = 100
 [author]
   name = "Ismael Celis"
 [markup.goldmark.renderer]
