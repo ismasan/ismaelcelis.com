@@ -766,7 +766,7 @@ expect(NumberCruncher).to be_composed_of_steps(
 
 ## Conclusion
 
-Like anything, this approach has its trade-offs. If you prefer inheritance over composition, or the processing required can't be easily broken down into steps, then this approach might not be the best fit.
+Like anything, this approach has its trade-offs. If the problem can be better thought of as an object graph rather than a sequence, or the processing required can't be easily broken down into steps, then this approach might not be the best fit.
 
 In general, I've found it provides a _simple_ mental model to reason about problems (in [the Rick Hickey sense](https://www.youtube.com/watch?v=SxdOUGdseq4)).
 
