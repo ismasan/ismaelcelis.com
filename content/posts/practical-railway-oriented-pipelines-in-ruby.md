@@ -285,7 +285,7 @@ result.value # => [2, 4, 6, 8, 10]
 Since `Pipeline` itself implements the `#call(Result) Result` interface, it can be used as a step in another pipeline.
 
 ```ruby
-BigPieline = Pipeline.new do |pl|
+BigPipeline = Pipeline.new do |pl|
   pl.step Step1 # a regular step
   pl.step NumberCruncher # a nested pipeline
   pl.step Step3 # another regular step
@@ -312,7 +312,7 @@ module NumberValidation
 end
 
 # Compose a larger pipeline
-BigPieline = Pipeline.new do |pl|
+BigPipeline = Pipeline.new do |pl|
   pl.step Step1
   pl.step NumberValidation.new(lte: 100) # a nested pipeline
   pl.step Step3
@@ -682,7 +682,7 @@ pl.step FullTextSearch
 ### Durable execution
 
 You can use it to build durable execution workflows, where each step is a task that can be retried or rolled back.
-This can be used to build rebust and fault-tolerant operations. For example background jobs, or long-running [sagas](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
+This can be used to build robust and fault-tolerant operations. For example background jobs, or long-running [sagas](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
 ```ruby
 HolidayBookingSaga = Pipeline.new do |pl|
