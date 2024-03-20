@@ -42,7 +42,7 @@ result.context # {}
 result.continue? # => true
 ```
 
-`Result` instances can be _continued_ or _halted_. These return new copies with the same of different data.
+`Result` instances can be _continued_ or _halted_. These return new copies with the same or different data.
 
 ```ruby
 result = result.continue([5, 6, 7, 8])
