@@ -12,194 +12,6 @@ externalLink = ""
 series = []
 +++
 
-Some years ago I [explored patterns](/posts/composable-pipelines-in-ruby/) for building composable processing pipelines in Ruby, using a Railway-oriented paradigm.
-
-Here, I describe a simplified implementation for practical use.
-
-```ruby
-# An illustrative data processing pipeline
-DataImporter = Pipeline.new do |pl|
-  pl.step ExtractData
-  pl.step TransformData
-  pl.step LoadData
-end
-```
-
-I've relied on versions of this approach in various projects for some time now, and I've found it to be a very effective way to build and maintain complex data processing workflows.
-
-## The result class
-
-A generic `Result` wraps values passed through the pipeline, and can be in one of two states: `Continue` or `Halt`.
-The values themselves can be anything relevant to the domain, but `Result` offers a consistent interface for handling them in the pipeline, as well as metadata such as user input, errors and arbitrary context.
-
-```ruby
-# Initial result
-result = Result.new([1, 2, 3, 4])
-result.value # [1, 2, 3, 4]
-result.input # {}
-result.errors # {}
-result.context # {}
-result.continue? # => true
-```
-
-`Result` instances can be _continued_ or _halted_. These return new copies with the same or different data.
-
-```ruby
-result = result.continue([5, 6, 7, 8])
-result.value # [5, 6, 7, 8]
-result.continue? # => true
-
-result = result.halt
-result.continue? # => false
-```
-
-`Result` instances can be initialised or copied to add input, errors or context data.
-
-```ruby
-result = Result.new([1, 2, 3, 4], input: { limit: 2 })
-result.input # { limit: 2 }
-# Produce a new Result with some context data.
-result = result.with_context(:count, 4)
-result.context[:count] # 4
-```
-
-* The `input` Hash is meant to pass external user or system input relevant for processing.
-* The `errors` Hash is meant to accumulate errors during processing.
-* The `context` Hash is meant to pass arbitrary data between pipeline steps.
-
-Helper methods such as `#with_context` and `#with_error` as well as `#halt` and `#continue` work to help manipulate result instances as it moves through the pipeline.
-
-```ruby
-result = result.halt.with_error(:limit, "Exceeded")
-# result.continue? => false
-# result.errors => { limit: "Exceeded" }
-```
-
-## The pipeline
-
-A pipeline is a sequence of steps that process a `Result` and return a new `Result`.
-a `Step` is a simple object that responds to `#call` and takes a `Result` as input, returning a new `Result`.
-
-```ruby
-MyPipeline = Pipeline.new do |pl|
-  # Anything that responds to #call can be a step
-  pl.step MyCustomStep.new
-
-  # Or a simple proc. This one limits the set by the :limit input
-  pl.step do |result|
-    set = result.value.first(result.input[:limit])
-    result.continue(set)
-  end
-end
-
-# Usage
-initial_result = Result.continue((1..100), input: { limit: 5 })
-result = MyPipeline.call(initial_result)
-result.value # => [1, 2, 3, 4, 5]
-```
-
-There's very little to the `Pipeline` class itself.
-
-```ruby
-class Pipeline
-  attr_reader :steps
-
-  def initialize(&block)
-    @steps = []
-    block.call(self) and @steps.freeze if block_given?
-  end
-
-  def step(callable, &block)
-    callable ||= block
-    raise ArgumentError, "Step must respond to #call" unless callable.respond_to?(:call)
-    steps << callable
-    self
-  end
-
-  # Iterate steps, call each one in turn,
-  # passing the result of the previous step to the next.
-  def call(result)
-    steps.reduce(result) { |r, step| step.call(r) }
-  end
-end
-```
-
-## The Railway bit
-
-Where this becomes useful is in the ability to "halt" processing at any point in the pipeline.
-
-```ruby
-MyPipeline = Pipeline.new do |pl|
-  # This step halts processing if the set size is greater than 100
-  pl.step do |result|
-    if result.value.size > 100
-      return result.halt.with_error(:value, "Too many elements")
-    end
-    result
-  end
-
-  # This step should never be called if the previous one halted the result
-  pl.step do |result|
-    result.continue(result.value.map { |n| n * 2 })
-  end
-end
-```
-
-To make this work, we just need to make a small tweak to the `#call` method in the `Pipeline` class.
-
-```ruby
-def call(result)
-  steps.reduce(result) do |r, step|
-    # If the result is halted, return it untouched.
-    r.continue? ? step.call(r) : r
-  end
-end
-```
-
-Now, any step that returns a _halt_ will just skip further steps downstream. Lets do some number crunching:
-
-```ruby
-# A portable step to validate set size
-class ValidateSetSize
-  def initialize(lte:) = @lte = lte
-
-  def call(result)
-    return result.halt.with_error(:value, "Too many elements") if result.value.size > @lte
-    result
-  end
-end
-
-# A step to multiply each number in the set by a factor
-# This one is a Proc that returns a Proc.
-MultiplyBy = proc do |factor|
-  proc do |result|
-    result.continue(result.value.map { |n| n * factor })
-  end
-end
-
-# A step to limit the set to the first N elements, as per input[:limit]
-LimitSet = proc do |result|
-  set = result.value.first(result.input[:limit])
-  result.continue(set)
-end
-
-# Compose the pipeline
-NumberCruncher = Pipeline.new do |pl|
-  pl.step ValidateSetSize.new(lte: 100)
-  pl.step MultiplyBy.(2)
-  pl.step LimitSet
-end
-```
-
-In this example, the first `ValidateSetSize` step will halt the pipeline if the set size is greater than 100, preventing `MultiplyBy` and `LimitSet` steps from running.
-
-```ruby
-initial_result = Result.continue((1..101), input: { limit: 5 })
-result = NumberCruncher.call(initial_result)
-result.continue? # => false
-result.errors # => { value: "Too many elements" }
-```
-
 <style>
 .execution-trace {
   list-style: none;
@@ -268,16 +80,172 @@ result.errors # => { value: "Too many elements" }
 }
 </style>
 
+Some years ago I [explored patterns](/posts/composable-pipelines-in-ruby/) for building composable processing pipelines in Ruby, using a Railway-oriented paradigm.
+
+Here, I describe a simplified implementation for practical use.
+
+```ruby
+# An illustrative data processing pipeline
+DataImporter = Pipeline.new do |pl|
+  pl.step ExtractData
+  pl.step TransformData
+  pl.step LoadData
+end
+```
+
+I've relied on versions of this approach in various projects for some time now, and I've found it to be a very effective way to build and maintain complex data processing workflows.
+
+## The result class
+
+A generic `Result` wraps values passed through the pipeline, and can be in one of two states: `Continue` or `Halt`.
+The values themselves can be anything relevant to the domain, but `Result` offers a consistent interface for handling them in the pipeline, as well as metadata such as user input, errors and arbitrary context.
+
+```ruby
+# Initial result
+result = Result.new([1, 2, 3, 4])
+result.value # [1, 2, 3, 4]
+result.continue? # => true
+```
+
+`Result` instances can be _continued_ or _halted_. These return new copies with the same or different data.
+
+```ruby
+result = result.continue([5, 6, 7, 8])
+result.value # [5, 6, 7, 8]
+result.continue? # => true
+
+result = result.halt
+result.continue? # => false
+```
+
+## The pipeline
+
+A pipeline is a sequence of steps that process a `Result` and return a new `Result`.
+a `Step` is a simple object that responds to `#call` and takes a `Result` as input, returning a new `Result`.
+
+```ruby
+MyPipeline = Pipeline.new do |pl|
+  # Anything that responds to #call can be a step
+  pl.step MyCustomStep.new
+
+  # Or a simple proc. This one limits the set by the :limit input
+  pl.step do |result|
+    set = result.value.first(result.input[:limit])
+    result.continue(set)
+  end
+end
+
+# Usage
+initial_result = Result.continue((1..100), input: { limit: 5 })
+result = MyPipeline.call(initial_result)
+result.value # => [1, 2, 3, 4, 5]
+```
+
+There's very little to the `Pipeline` class itself.
+
+```ruby
+class Pipeline
+  attr_reader :steps
+
+  def initialize(&block)
+    @steps = []
+    block.call(self) and @steps.freeze if block_given?
+  end
+
+  def step(callable, &block)
+    callable ||= block
+    raise ArgumentError, "Step must respond to #call" unless callable.respond_to?(:call)
+    steps << callable
+    self
+  end
+
+  # Iterate steps, call each one in turn,
+  # passing the result of the previous step to the next.
+  def call(result)
+    steps.reduce(result) { |r, step| step.call(r) }
+  end
+end
+```
+
+## The Railway bit
+
+Where this becomes useful is in the ability to "halt" processing at any point in the pipeline.
+
+```ruby
+MyPipeline = Pipeline.new do |pl|
+  # This step halts processing if the set size is greater than 100
+  pl.step do |result|
+    if result.value.size > 100
+      return result.halt
+    end
+    result
+  end
+
+  # This step should never be called if the previous one halted the result
+  pl.step do |result|
+    result.continue(result.value.map { |n| n * 2 })
+  end
+end
+```
+
+To make this work, we just need to make a small tweak to the `#call` method in the `Pipeline` class.
+
+```ruby
+def call(result)
+  steps.reduce(result) do |r, step|
+    # If the result is halted, return it untouched.
+    r.continue? ? step.call(r) : r
+  end
+end
+```
+
+Now, any step that returns a _halt_ will just skip further steps downstream. Lets do some number crunching:
+
+```ruby
+# A portable step to validate set size
+class ValidateSetSize
+  def initialize(lte:) = @lte = lte
+
+  def call(result)
+    return result.halt if result.value.size > @lte
+    result
+  end
+end
+
+# A step to multiply each number in the set by a factor
+# This one is a Proc that returns a Proc.
+MultiplyBy = proc do |factor|
+  proc do |result|
+    result.continue(result.value.map { |n| n * factor })
+  end
+end
+
+# Compose the pipeline
+NumberCruncher = Pipeline.new do |pl|
+  pl.step { |r| puts 'Logging'; r }
+  pl.step ValidateSetSize.new(lte: 100)
+  pl.step MultiplyBy.(2)
+end
+```
+
+In this example, the second `ValidateSetSize` step will halt the pipeline if the set size is greater than 100, preventing `MultiplyBy` from running.
+
+```ruby
+initial_result = Result.continue((1..101))
+result = NumberCruncher.call(initial_result)
+result.continue? # => false
+```
+
 <ul class="execution-trace">
-    <li class="halt">1. <code>ValidateSetSize.new(lte: 100)</code></li>
-    <li class="never">2. <code>MultiplyBy.(2)</code></li>
-    <li class="never">3. <code>LimitSet</code></li>
+    <li class="continue">1. <code>Logging</code></li>
+    <li class="halt">2. <code>ValidateSetSize.new(lte: 100)</code></li>
+    <li class="never">3. <code>MultiplyBy.(2)</code></li>
 </ul>
 
 However, if all steps return a _continue_ result, the pipeline processes all steps and returns the final result.
 
 ```ruby
-initial_result = Result.continue((1..99), input: { limit: 5 })
+initial_result = Result.continue((1..99))
 result = MyPipeline.call(initial_result)
 result.continue? # => true
 # Each number in set was multiplied by 2, then limited to the first 5
@@ -285,9 +253,71 @@ result.value # => [2, 4, 6, 8, 10]
 ```
 
 <ul class="execution-trace">
-    <li class="continue">1. <code>ValidateSetSize.new(lte: 100)</code></li>
-    <li class="continue">2. <code>MultiplyBy.(2)</code></li>
-    <li class="continue">3. <code>LimitSet</code></li>
+    <li class="continue">1. <code>Logging</code></li>
+    <li class="continue">2. <code>ValidateSetSize.new(lte: 100)</code></li>
+    <li class="continue">3. <code>MultiplyBy.(2)</code></li>
+</ul>
+
+## Result metadata
+
+What's described above is the essence of the Railway-oriented paradigm. But passing extra metadata with the result can be useful to support a variety of use cases.
+
+```ruby
+# Start a result with a dataset value and user input.
+result = Result.new([1, 2, 3, 4], input: { limit: 5 })
+result.value # => [1, 2, 3, 4]
+result.input[:limit] # => 5
+```
+
+What those fields are may depend on the domain, but for my use cases I tend to use the following:
+
+* The `value` is the main data being processed. A set of records, an API response, a CSV stream, etc.
+* The `input` Hash is meant to pass external user or system input relevant for processing, or to control pipeline behaviour.
+* The `errors` Hash is meant to accumulate errors during processing.
+* The `context` Hash is meant to pass or accumulate arbitrary data between pipeline steps. Counts, lookups, facets, etc.
+
+```ruby
+result = Result.new([1, 2, 3, 4], input: { limit: 5 })
+result.input # { limit: 5 }
+result.errors # {}
+result.context # {}
+```
+
+Then I add helper methods such as `#with_context` and `#with_error` as well as `#halt` and `#continue` to help manipulate result instances as they move through the pipeline.
+
+```ruby
+result = result.with_context(:count, 4)
+# result.context[:count] # 4
+result = result.halt.with_error(:limit, "Exceeded")
+# result.continue? => false
+# result.errors => { limit: ["Exceeded"] }
+```
+
+Note that these helpers are not required for the pipeline to work. They're just syntax sugar to make working with `Result` instances more convenient.
+
+Let's add a step to limit the set to the first N elements based on user input.
+
+```ruby
+LimitSet = proc do |result|
+  set = result.value.first(result.input[:limit])
+  result.continue(set)
+end
+
+NumberCruncher = Pipeline.new do |pl|
+  # ... Previous steps here
+  pl.step LimitSet # <= this step expects input[:limit]
+end
+
+initial_result = Result.continue((1..100), input: { limit: 5 })
+result = NumberCruncher.call(initial_result)
+result.value # =>[2, 4, 6, 8, 10]
+```
+
+<ul class="execution-trace">
+    <li class="continue">1. <code>Logging</code></li>
+    <li class="continue">2. <code>ValidateSetSize.new(lte: 100)</code></li>
+    <li class="continue">3. <code>MultiplyBy.(2)</code></li>
+    <li class="continue">4. <code>LimitSet</code></li>
 </ul>
 
 ## Composing pipelines
