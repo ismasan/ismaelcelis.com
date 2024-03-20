@@ -295,6 +295,9 @@ result = result.halt.with_error(:limit, "Exceeded")
 
 Note that these helpers are not required for the pipeline to work. They're just syntax sugar to make working with `Result` instances more convenient.
 
+> All of these methods, as well as `#continue` and `#halt`, **return new instances**, leaving the original untouched. Inmutable results means no risk of a step accidentaly modifying an object that might be used elsewhere in the code.
+> It also enables concurrent execution of steps, as we'll see later.
+
 Let's add a step to limit the set to the first N elements based on user input.
 
 ```ruby
