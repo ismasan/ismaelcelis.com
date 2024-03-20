@@ -118,10 +118,33 @@ result = result.halt
 result.continue? # => false
 ```
 
+## The steps
+
+A step is a simple object that responds to `#call` and takes a `Result` as input, returning a new `Result`.
+
+This is a step:
+
+```ruby
+class MyCustomStep
+  def call(result)
+    # Do something with result.value
+    result.continue(new_value)
+  end
+end
+```
+
+And so is this:
+
+```ruby
+MyProcStep = proc do |result|
+  # Do something with result.value
+  result.continue(new_value)
+end
+```
+
 ## The pipeline
 
 A pipeline is a sequence of steps that process a `Result` and return a new `Result`.
-a `Step` is a simple object that responds to `#call` and takes a `Result` as input, returning a new `Result`.
 
 ```ruby
 MyPipeline = Pipeline.new do |pl|
@@ -166,6 +189,8 @@ class Pipeline
   end
 end
 ```
+
+Because it responds to `#call(Result) Result`, a pipeline is itself a step.
 
 ## The Railway bit
 
@@ -795,6 +820,7 @@ Testing any complex workflow can be challenging. Composable pipelines allows me 
 step = MultiplyBy.(2)
 initial_result = Result.continue([1, 2, 3, 4])
 result = step.call(initial_result)
+
 expect(result.value).to eq([2, 4, 6, 8])
 ```
 
