@@ -728,11 +728,13 @@ You can use it to build durable execution workflows, where each step is a task t
 This can be used to build robust and fault-tolerant operations. For example background jobs, or long-running [sagas](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
 ```ruby
-HolidayBookingSaga = Pipeline.new do |pl|
+class DurablePipeline < Pipeline
   # Custom middleware to store the result of last successful step
   # In case of failure, the pipeline can be resumed from the last successful step
   middleware DurableExecution.new(store: Redis.new)
+end
 
+HolidayBookingSaga = DurablePipeline.new do |pl|
   pl.step BookFlights
   pl.step BookHotel
   pl.step BookCarRental
