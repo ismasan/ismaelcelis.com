@@ -34,11 +34,21 @@ The values themselves can be anything relevant to the domain, but `Result` offer
 
 ```ruby
 # Initial result
-result = Result.continue([1, 2, 3, 4])
+result = Result.new([1, 2, 3, 4])
+result.value # [1, 2, 3, 4]
 result.input # {}
 result.errors # {}
 result.context # {}
 result.continue? # => true
+```
+
+`Result` instances can be _continued_ or _halted_. These return new copies with the same of different data.
+
+```ruby
+result = result.continue([5, 6, 7, 8])
+result.value # [5, 6, 7, 8]
+result.continue? # => true
+
 result = result.halt
 result.continue? # => false
 ```
@@ -46,7 +56,7 @@ result.continue? # => false
 `Result` instances can be initialised or copied to add input, errors or context data.
 
 ```ruby
-result = Result.continue([1, 2, 3, 4], input: { limit: 2 })
+result = Result.new([1, 2, 3, 4], input: { limit: 2 })
 result.input # { limit: 2 }
 # Produce a new Result with some context data.
 result = result.with_context(:count, 4)
