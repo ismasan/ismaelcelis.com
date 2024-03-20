@@ -60,7 +60,7 @@ result = Result.new([1, 2, 3, 4], input: { limit: 2 })
 result.input # { limit: 2 }
 # Produce a new Result with some context data.
 result = result.with_context(:count, 4)
-result.context[:count] = 4
+result.context[:count] # 4
 ```
 
 * The `input` Hash is meant to pass external user or system input relevant for processing.
