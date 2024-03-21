@@ -4,7 +4,7 @@ date = 2024-03-20T12:00:00Z
 title = "Railway-Oriented Pipelines in Ruby pt. 3: Extending pipelines"
 description = "Implementing domain-specific steps and extending a Railway-oriented pipelines in Ruby."
 images = ["/images/2024/practical-railway-oriented-pipelines-ruby.png"]
-slug = ""
+slug = "railway-oriented-ruby-extending-pipelines"
 authors = ["Ismael Celis"]
 tags = ["ruby", "functional", "pipelines", "composition"]
 categories = []
@@ -12,12 +12,24 @@ externalLink = ""
 series = []
 +++
 
+In this series:
+* Part 1: [Practical Railway-Oriented Pipelines in Ruby](/posts/practical-railway-oriented-pipelines-in-ruby/)
+* Part 2: [User input, errors and metadata](/posts/railway-oriented-ruby-result-metadata/)
+* **Part 3**: Extending pipelines
+* Part 4: [Middleware](/posts/railway-oriented-ruby-middleware/)
+* Part 5: [Testing pipelines](/posts/railway-oriented-ruby-testing/)
+
+In the [previous article](/posts/railway-oriented-ruby-result-metadata/) in this series I showed how to pass extra metadata from one step to the next, including user input, errors and context data.
+
+This article expands on the previous ones by showing how to extend the pipeline with domain-specific steps and helpers.
+
 ## Extending the pipeline
 
-The `Pipeline` class itself can be subclassed or extended to add domain-specific functionality. One that I've found helpful is to add a terse DSL for input validation.
+The `Pipeline` class itself can be subclassed or extended to add domain-specific functionality.
+One that I've found helpful is to add a terse DSL for input validation.
 
 ```ruby
-NumberCruncher = Pipeline.new do |pl|
+NumberCruncher = ValidatingPipeline.new do |pl|
   # the #input helper adds a step to validate input
   pl.input do
     field(:limit).type(:integer).required.default(5)
@@ -31,22 +43,25 @@ end
 All `#input` does is register a step using a specialised class that knows how to validate input. That class exposes the `#call(Result) Result` interface, and halts the pipeline if input is invalid.
 
 ```ruby
-class Pipeline
+class ValidatingPipeline < Pipeline
   # ... etc
 
+  # A helper method to register a custom step
   def input(&block)
     step InputValidator.new(&block)
   end
 end
 ```
 
-I use my [Parametric](https://github.com/ismasan/parametric) gem for this, but anything that makes sense for your domain will do. [Dry::Types](https://dry-rb.org/gems/dry-types/) is another good option. Or Rails' [ActiveModel::Validations](https://api.rubyonrails.org/classes/ActiveModel/Validations.html) if you're in a Rails app.
+I use my [Parametric](https://github.com/ismasan/parametric) gem for this, but anything that makes sense for your domain will do. [Dry::Types](https://dry-rb.org/gems/dry-types/) is another good option. Or Rails' [ActiveModel::Validations](https://api.rubyonrails.org/classes/ActiveModel/Validations.html) (as shown in the previous article) if you're in a Rails app.
+
+[This](https://gist.github.com/ismasan/3b83cac959cda653f60ee0c57cc922da) is the implementation.
 
 This means that complex operations can now be packaged up and validate their own inputs.
 
 ```ruby
 # A portable step to multiply each number in the set by a factor.
-Multiplier = Pipeline.new do |pl|
+Multiply = Pipeline.new do |pl|
   pl.input do
     field(:factor).type(:integer).required.default(1)
   end
@@ -59,7 +74,7 @@ end
 
 # A portable step to limit the set to the first N elements.
 # It defines its own required input.
-Limiter = Pipeline.new do |pl|
+LimitSet = Pipeline.new do |pl|
   pl.input do
     field(:limit).type(:integer).required.default(5)
   end
@@ -73,16 +88,16 @@ end
 
 ```ruby
 NumberCruncher = Pipeline.new do |pl|
-  pl.step NumberValidation.new(lte: 100)
-  pl.step Multiplier
-  pl.step Limiter
+  pl.step ValidateNumbers.new(lte: 100)
+  pl.step Multiply
+  pl.step LimitSet
 end
 ```
 
 I use helper methods to simplify domain-specific pipelines. Some other examples include:
 
 ```ruby
-MyPipeline = Pipeline.new do |pl|
+MyPipeline = DatasetPipeline.new do |pl|
   # A helper to filter elements in a set.
   # Returns a new [Result] with the filtered set.
   pl.filter do |element|
@@ -95,31 +110,33 @@ MyPipeline = Pipeline.new do |pl|
   end
 
   # A development helper to invoke a Byebug or Pry session at this point
-  pl.debugger
+  pl.debug
 end
 ```
 
 For most, the implementation is trivial.
 
 ```ruby
-def filter(&block)
-  step do |result|
-    set = result.value.filter(&block)
-    result.continue(set)
+class DatasetPipeline < Pipeline
+  def filter(&block)
+    step do |result|
+      set = result.value.filter(&block)
+      result.continue(set)
+    end
   end
-end
 
-def sort(&block)
-  step do |result|
-    set = result.value.sort(&block)
-    result.continue(set)
+  def sort(&block)
+    step do |result|
+      set = result.value.sort(&block)
+      result.continue(set)
+    end
   end
-end
 
-def debugger
-  step do |result|
-    binding.pry
-    result
+  def debug
+    step do |result|
+      binding.pry
+      result
+    end
   end
 end
 ```
@@ -196,4 +213,6 @@ In other words:
     </li>
     <li class="never">[4] <code>OkStep</code></li>
 </ul>
+
+In the following article I'll show how to leverage this metadata when adding middleware to pipelines.
 
