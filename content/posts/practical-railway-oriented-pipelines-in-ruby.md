@@ -9,7 +9,7 @@ authors = ["Ismael Celis"]
 tags = ["ruby", "functional", "pipelines", "composition"]
 categories = []
 externalLink = ""
-series = ["foo bar"]
+series = []
 +++
 
 In this series:
