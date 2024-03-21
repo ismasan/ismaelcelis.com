@@ -1,7 +1,7 @@
 +++
 draft = false
 date = 2021-10-14T11:32:35+01:00
-title = "Railway-Oriented composable pipelines in Ruby"
+title = "Exploring Railway-Oriented programming in Ruby"
 description = "An exploration of patterns for building composable data pipelines in Ruby, from the basics to the possibly YAGNI."
 images = ["/images/2022/railway-oriented-pipelines-front.png"]
 slug = ""

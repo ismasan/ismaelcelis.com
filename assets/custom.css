@@ -69,3 +69,90 @@ h2.has-anchor a.heading-anchor:hover {
   border-bottom: solid 1px var(--fog);
 }
 
+.next-prev, .post-content .next-prev {
+  margin: 0 calc(var(--gap) * -1)4rem;
+  border-radius: .5rem;
+  display: block;
+  background-color: var(--fog);
+  opacity: 0.6;
+  padding: 2rem var(--gap);
+  font-weight: normal;
+  border-width: 0;
+}
+.next-prev:hover {
+  opacity: 1;
+}
+.next-prev span {
+  display: block;
+}
+.next-prev strong {
+  font-weight: bold;
+}
+
+/* Railway-oriented pipelines
+ * ----------------------------------*/
+.execution-trace {
+  list-style: none;
+  padding-left: 0;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #666;
+}
+.execution-trace li {
+  position: relative;
+}
+.execution-trace ul {
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.execution-trace ul li {
+  padding-left: 1em;
+}
+.execution-trace ul li::before {
+  content: '';
+  position: absolute;
+  left: -0.5em;
+  top: 0.5em;
+  width: 1em;
+  height: 0.5em;
+  border-left: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+.execution-trace li > code {
+    margin-inline: 0;
+}
+.execution-trace .halt > code {
+    color: #c00;
+    background-color: #fdd;
+    font-weight: bold;
+}
+.execution-trace .halt::after {
+    content: ' ← halted';
+    font-size: 0.8em;
+}
+.execution-trace .never::after {
+    content: ' ← never run';
+    font-size: 0.8em;
+}
+.execution-trace .note {
+    font-size: 0.8em;
+}
+.execution-trace .note::before {
+    content: ' ← ';
+}
+.execution-trace .continue > code {
+    color: #038a03;
+    background-color: #dfd;
+    font-weight: bold;
+}
+.execution-trace .running > code {
+    color: #b3762b;
+    background-color: #f7ebc1;
+    font-weight: bold;
+}
+.execution-trace .warning > code {
+    color: #168594;
+    background-color: #c1f1f7;
+    font-weight: bold;
+}
