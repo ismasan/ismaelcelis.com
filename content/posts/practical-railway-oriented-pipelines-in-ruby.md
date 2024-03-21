@@ -313,12 +313,36 @@ result.context # {}
 
 Then I add helper methods such as `#with_context` and `#with_error` as well as `#halt` and `#continue` to help manipulate result instances as they move through the pipeline.
 
+### Passing context between steps
+
 ```ruby
 result = result.with_context(:count, 4)
 # result.context[:count] # 4
+```
+
+### Accummulating errors while allowing the pipeline to continue
+
+```ruby
+result = result.with_error(:limit, "Exceeded")
+# result.continue? => true
+# result.errors => { limit: ["Exceeded"] }
+```
+
+### Halting with errors
+
+```ruby
 result = result.halt.with_error(:limit, "Exceeded")
 # result.continue? => false
 # result.errors => { limit: ["Exceeded"] }
+```
+
+### Combining helpers
+
+```ruby
+result = result
+            .halt([]) # <= halt with an empty value
+            .with_error(:limit, "Exceeded") # <= add an error
+            .with_context(:count, 4) # <= add context
 ```
 
 Note that these helpers are not required for the pipeline to work. They're just syntax sugar to make working with `Result` instances more convenient.
