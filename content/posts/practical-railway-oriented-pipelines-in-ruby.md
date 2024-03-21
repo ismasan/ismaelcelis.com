@@ -177,7 +177,7 @@ class Pipeline
     block.call(self) and @steps.freeze if block_given?
   end
 
-  def step(callable, &block)
+  def step(callable = nil, &block)
     callable ||= block
     raise ArgumentError, "Step must respond to #call" unless callable.respond_to?(:call)
     steps << callable
