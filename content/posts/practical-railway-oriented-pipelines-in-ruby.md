@@ -1,7 +1,7 @@
 +++
 draft = false
 date = 2024-03-17T12:19:16Z
-title = "Practical Railway-Oriented Pipelines in Ruby, pt. 1"
+title = "Practical Railway-Oriented Pipelines in Ruby"
 description = "A simplified approach to building composable data pipelines in Ruby, with examples and use cases."
 images = ["/images/2024/practical-railway-oriented-pipelines-ruby.png"]
 slug = ""
@@ -11,6 +11,13 @@ categories = []
 externalLink = ""
 series = ["foo bar"]
 +++
+
+In this series:
+* **Part 1**: Practical Railway-Oriented Pipelines in Ruby
+* Part 2: [User input, errors and metadata](/posts/railway-oriented-ruby-result-metadata/)
+* Part 3: [Extending pipelines](/posts/railway-oriented-ruby-extending-pipelines/)
+* Part 4: [Middleware](/posts/railway-oriented-ruby-middleware/)
+* Part 5: [Testing pipelines](/posts/railway-oriented-ruby-testing/)
 
 Some years ago I [explored patterns](/posts/composable-pipelines-in-ruby/) for building composable processing pipelines in Ruby, using a Railway-oriented paradigm.
 
