@@ -70,10 +70,12 @@ h2.has-anchor a.heading-anchor:hover {
 }
 
 .next-prev, .post-content .next-prev {
+  margin: 0 calc(var(--gap) * -1)4rem;
+  border-radius: .5rem;
   display: block;
   background-color: var(--fog);
   opacity: 0.6;
-  padding: 2rem;
+  padding: 2rem var(--gap);
   font-weight: normal;
   border-width: 0;
 }
