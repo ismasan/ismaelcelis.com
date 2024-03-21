@@ -398,6 +398,7 @@ class NumberValidation
     @pipeline = Pipeline.new do |pl|
       pl.step ValidateSetSize.new(lte: lte)
       # Use a Method object as step
+      # https://ruby-doc.org/3.3.0/Method.html
       pl.step method(:coerce_to_integers)
     end
   end
@@ -622,6 +623,8 @@ end
 A middleware step wraps around the execution of another step.
 
 ```ruby
+# Delegate anything else to the underlying step
+# https://ruby-doc.org/3.3.0/stdlibs/delegate/SimpleDelegator.html
 class StepTracker < SimpleDelegator
   def call(result)
     step = __getobj__
