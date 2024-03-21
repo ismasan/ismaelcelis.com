@@ -75,6 +75,6 @@ expect(result.value).to eq([2, 4, 6, 8])
 
 There really isn't a lot more to it.
 
-A big caveat is that whether a step has side effects (calling a database, an external API, the file system, etc) is up to you (unless you stricly stick to functional patterns, which is not a given).
+A big caveat is that whether a step has side effects (calling a database, an external API, the file system, etc) is up to you (unless you stick to functional patterns and avoid side effects, which is not a given).
 In that case you'd setup and test those dependencies accordingly, like you'd do with other similar cases.
 
