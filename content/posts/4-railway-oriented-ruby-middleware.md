@@ -4,7 +4,7 @@ date = 2024-03-20T13:00:00Z
 title = "Railway-Oriented Pipelines in Ruby pt. 4: Middleware"
 description = "Implementing middleware in a Railway-oriented pipeline in Ruby."
 images = ["/images/2024/practical-railway-oriented-pipelines-ruby.png"]
-slug = ""
+slug = "railway-oriented-ruby-middleware"
 authors = ["Ismael Celis"]
 tags = ["ruby", "functional", "pipelines", "composition"]
 categories = []
@@ -12,10 +12,24 @@ externalLink = ""
 series = []
 +++
 
+In this series:
+* Part 1: [Practical Railway-Oriented Pipelines in Ruby](/posts/practical-railway-oriented-pipelines-in-ruby/)
+* Part 2: [User input, errors and metadata](/posts/railway-oriented-ruby-result-metadata/)
+* Part 3: [Extending pipelines](/posts/railway-oriented-ruby-extending-pipelines/)
+* **Part 4**: Middleware
+* Part 5: [Testing pipelines](/posts/railway-oriented-ruby-testing/)
+
+In the [previous article](/posts/railway-oriented-ruby-extending-pipelines/) in this series I showed how to extend the basic pipeline with domain-specific steps and helpers.
+
+Here I'll show how to add middleware to the pipeline, to add tracing, logging, caching, and other cross-cutting concerns.
+
 ## Middleware
 
-Now we'll add `context[:halted_step]` to the `Result` instance, so that we know exactly what step halted the pipeline.
-For that, we'll use a middleware approach. We'll tweak `Pipeline#step` to wrap all registered steps with a middleware that adds the `halted_step` to the result context if the step halts the pipeline.
+Middleware is a bit of code that wraps around each step in the pipeline, adding functionality to it. See [Rack](https://github.com/rack/rack?tab=readme-ov-file#available-middleware-shipped-with-rack) for a classic example.
+
+As an example, I want to add middleware that adds `context[:halted_step]` to the `Result` instance, so that we know exactly what step halted the pipeline.
+
+As a started implementation, I'll tweak `Pipeline#step` to wrap all registered steps with a middleware that adds the `halted_step` to the result context if the step halts the pipeline.
 
 ```ruby
 class Pipeline
@@ -25,8 +39,9 @@ class Pipeline
     callable ||= block
     raise ArgumentError, "Step must respond to #call" unless callable.respond_to?(:call)
 
-    # Wrap the step with a middleware
+    # Wrap the step with a middleware before appending it to the list
     callable = StepTracker.new(callable)
+
     steps << callable
     self
   end
@@ -39,6 +54,7 @@ A middleware step wraps around the execution of another step.
 # Delegate anything else to the underlying step
 # https://ruby-doc.org/3.3.0/stdlibs/delegate/SimpleDelegator.html
 class StepTracker < SimpleDelegator
+  # Capture the call to a step, and add something to the context if it halted.
   def call(result)
     step = __getobj__
     result = step.call(result)
@@ -49,6 +65,8 @@ end
 ```
 
 Now, `context[:halted_step]` will be set to the step that halted the pipeline, and `context[:trace]` will be set to the position of that step in the pipeline.
+
+We also get `context[:trace]` to show the position of the halted step in the pipeline, as shown [in the previous article](/posts/railway-oriented-ruby-extending-pipelines/#tracing-step-positions).
 
 ```ruby
 result = BigPipeline.call(Result.continue)
@@ -208,6 +226,8 @@ HolidayBookingSaga = Pipeline.new do |pl|
 end
 ```
 
+[This](https://gist.github.com/ismasan/0bdcc76c2ea48f4259b38fafe131edb8#file-concurrent_processing-rb) is a basic implementation of that.
+
 ### HTTP handlers
 
 In Ruby we have plenty of incredible web frameworks to choose from, but a pipeline-oriented approach to web handling could be a good fit for some use cases. A bit like Elixir's [Plug](https://hexdocs.pm/plug/readme.html).
@@ -230,3 +250,8 @@ module API
   end
 end
 ```
+
+In future articles I might explore the potential of middleware in more depth.
+
+In the next article, I'll touch testing pipelines and steps.
+
