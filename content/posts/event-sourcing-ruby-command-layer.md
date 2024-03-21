@@ -323,7 +323,3 @@ I think this is a design mistake. Commands are really policy objects that could 
 
 Also as said before, this pollutes entity code with loads of unrelated implementation detail (side effects, validations, API calls) and your entities will unavoidably grow bloated as the project progresses. Entities should be in-memory representations of objects in your domain, enough to answer questions such as “what is the current price of this iPhone?” or “does this user have write permissions?”, and nothing else. *How* those objects come to be, and how and under what circumstances they change, should be handled by distinct layers in the system.
 
-### Next:
-- Projections and CQRS
-- Reactors and subscribers
-
