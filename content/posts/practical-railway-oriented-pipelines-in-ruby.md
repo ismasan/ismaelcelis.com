@@ -803,6 +803,8 @@ In Ruby we have plenty of incredible web frameworks to choose from, but a pipeli
 module API
   CreateUserHandler = HTTPPipeline.new do |pl|
     pl.input do
+      # This syntax belongs to Parametric, but you can use anything else
+      # for input validation.
       field(:name).type(:string).required
       field(:email).type(:string).required
     end
