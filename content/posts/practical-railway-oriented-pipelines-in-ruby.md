@@ -229,6 +229,7 @@ Now, any step that returns a _halt_ will just skip further steps downstream. Let
 ```ruby
 # A portable step to validate set size
 class ValidateSetSize
+  # @param lte [Integer] the maximum size allowed (Less Than or Equal)
   def initialize(lte:) = @lte = lte
 
   def call(result)
