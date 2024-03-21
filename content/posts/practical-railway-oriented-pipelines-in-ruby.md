@@ -87,9 +87,11 @@ Here, I describe a simplified implementation for practical use.
 ```ruby
 # An illustrative data processing pipeline
 DataImporter = Pipeline.new do |pl|
-  pl.step ExtractData
+  pl.step ValidateUserInput
+  pl.step ReadCSV
+  pl.step ValidateData
   pl.step TransformData
-  pl.step LoadData
+  pl.step SaveData
 end
 ```
 
