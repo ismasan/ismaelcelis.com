@@ -26,12 +26,12 @@ This article expands on the previous ones by showing how to extend the pipeline 
 ## Extending the pipeline
 
 The `Pipeline` class itself can be subclassed or extended to add domain-specific functionality.
-One that I've found helpful is to add a terse DSL for input validation.
+One that I've found helpful is to add a terse DSL for input parameter validation.
 
 ```ruby
 NumberCruncher = ValidatingPipeline.new do |pl|
-  # the #input helper adds a step to validate input
-  pl.input do
+  # the #params helper adds a step to validate input parameters
+  pl.params do
     field(:limit).type(:integer).required.default(5)
     field(:lte).type(:integer).required
   end
@@ -40,15 +40,15 @@ NumberCruncher = ValidatingPipeline.new do |pl|
 end
 ```
 
-All `#input` does is register a step using a specialised class that knows how to validate input. That class exposes the `#call(Result) Result` interface, and halts the pipeline if input is invalid.
+All `#params` does is register a step using a specialised class that knows how to validate result parameters. That class exposes the `#call(Result) Result` interface, and halts the pipeline if any parameter is invalid.
 
 ```ruby
 class ValidatingPipeline < Pipeline
   # ... etc
 
   # A helper method to register a custom step
-  def input(&block)
-    step InputValidator.new(&block)
+  def params(&block)
+    step ParamsValidator.new(&block)
   end
 end
 ```
@@ -62,25 +62,25 @@ This means that complex operations can now be packaged up and validate their own
 ```ruby
 # A portable step to multiply each number in the set by a factor.
 Multiply = Pipeline.new do |pl|
-  pl.input do
+  pl.params do
     field(:factor).type(:integer).required.default(1)
   end
 
   pl.step do |result|
-    factor = result.input[:factor]
+    factor = result.params[:factor]
     result.continue(result.value.map { |n| n * factor })
   end
 end
 
 # A portable step to limit the set to the first N elements.
-# It defines its own required input.
+# It defines its own required parameters.
 LimitSet = Pipeline.new do |pl|
-  pl.input do
+  pl.params do
     field(:limit).type(:integer).required.default(5)
   end
 
   pl.step do |result|
-    set = result.value.first(result.input[:limit])
+    set = result.value.first(result.params[:limit])
     result.continue(set)
   end
 end
