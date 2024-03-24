@@ -175,7 +175,7 @@ You can use it to build complex queries for databases or APIs.
 ```ruby
 pl.step do |result|
   query = result.value # An ActiveRecord::Relation or a Sequel::Dataset
-  account_id = result.input[:account_id]
+  account_id = result.params[:account_id]
   query = query.where(account_id:) if account_id
   result.continue(query)
 end
@@ -235,7 +235,7 @@ In Ruby we have plenty of incredible web frameworks to choose from, but a pipeli
 ```ruby
 module API
   CreateUserHandler = HTTPPipeline.new do |pl|
-    pl.input do
+    pl.params do
       # This syntax belongs to Parametric, but you can use anything else
       # for input validation.
       field(:name).type(:string).required
