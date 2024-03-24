@@ -39,11 +39,11 @@ expect(result.value).to eq([2, 4, 6, 8])
 You can test that specialised steps add the right metadata to the result.
 
 ```ruby
-step = InputValidatorStep.new do |input|
-  input.field(:limit).type(:integer).required
+step = ParamsValidatorStep.new do |schema|
+  schema.field(:limit).type(:integer).required
 end
 
-initial_result = Result.new([], input: { limit: 'nope!' })
+initial_result = Result.new([], params: { limit: 'nope!' })
 result = step.call(initial_result)
 
 expect(result.continue?).to be(false)
@@ -66,7 +66,7 @@ Such an RSpec matcher basically needs to compare the given steps with `Pipeline#
 You can of course test an entire pipeline end-to-end, in much the same way you'd test an individial step.
 
 ```ruby
-initial_result = Result.new([1, 2, 3, 4], input: { limit: 5 })
+initial_result = Result.new([1, 2, 3, 4], params: { limit: 5 })
 result = NumberCruncher.call(initial_result)
 
 expect(result.continue?).to be(true)
