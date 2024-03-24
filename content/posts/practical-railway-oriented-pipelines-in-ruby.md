@@ -42,7 +42,7 @@ The following are the core components of the pattern.
 ## The result class
 
 A generic `Result` wraps values passed through the pipeline, and can be in one of two states: `Continue` or `Halt`.
-The values themselves can be anything relevant to the domain, but `Result` offers a consistent interface for handling them in the pipeline, as well as metadata such as user input, errors and arbitrary context.
+The values themselves can be anything relevant to the domain, but `Result` offers a consistent interface for handling them in the pipeline, as well as metadata such as user input, errors and arbitrary context (I'll describe some of this in a separate article).
 
 ```ruby
 # Initial result
@@ -103,15 +103,15 @@ MyPipeline = Pipeline.new do |pl|
   # Anything that responds to #call can be a step
   pl.step MyCustomStep.new
 
-  # Or a simple proc. This one limits the set by the :limit input
+  # Or a simple proc. This one limits the set by the first 5 elements
   pl.step do |result|
-    set = result.value.first(result.input[:limit])
+    set = result.value.first(5)
     result.continue(set)
   end
 end
 
 # Usage
-initial_result = Result.new((1..100), input: { limit: 5 })
+initial_result = Result.new((1..100))
 result = MyPipeline.call(initial_result)
 result.value # => [1, 2, 3, 4, 5]
 ```
