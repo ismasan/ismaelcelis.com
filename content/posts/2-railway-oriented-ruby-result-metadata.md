@@ -37,22 +37,22 @@ end
 To make these pipelines practical, though, we want to be able to pass extra metadata with the result as it moves through the pipeline, so that we can support a variety of use cases.
 
 ```ruby
-# Start a result with a dataset value and user input.
-result = Result.new([1, 2, 3, 4], input: { limit: 5 })
+# Start a result with a dataset value and user parameters.
+result = Result.new([1, 2, 3, 4], params: { limit: 5 })
 result.value # => [1, 2, 3, 4]
-result.input[:limit] # => 5
+result.params[:limit] # => 5
 ```
 
 What those fields are may depend on the domain, but for my use cases I've settled on the following:
 
 * The `value` is the main data being processed. A set of records, an API response, a CSV stream, etc.
-* The `input` Hash is meant to pass external user or system input relevant for processing, or to control pipeline behaviour.
+* The `params` Hash is meant to pass external user or system input relevant for processing, or to control pipeline behaviour.
 * The `errors` Hash is meant to accumulate errors during processing.
 * The `context` Hash is meant to pass or accumulate arbitrary data between pipeline steps. Counts, lookups, facets, etc.
 
 ```ruby
-result = Result.new([1, 2, 3, 4], input: { limit: 5 })
-result.input # { limit: 5 }
+result = Result.new([1, 2, 3, 4], params: { limit: 5 })
+result.params # { limit: 5 }
 result.errors # {}
 result.context # {}
 ```
@@ -100,8 +100,8 @@ Let's add a step to limit the set to the first N elements based on user input. I
 
 ```ruby
 LimitSet = proc do |result|
-  if (limit = result.input[:limit])
-    set = result.value.first(result.input[:limit])
+  if (limit = result.params[:limit])
+    set = result.value.first(result.params[:limit])
     result.continue(set)
   else # No limit! Halt with an error.
     result.halt.with_error(:limit, "Not set")
@@ -110,10 +110,10 @@ end
 
 NumberCruncher = Pipeline.new do |pl|
   # ... Previous steps here
-  pl.step LimitSet # <= this step expects input[:limit]
+  pl.step LimitSet # <= this step expects params[:limit]
 end
 
-initial_result = Result.new((1..100), input: { limit: 5 })
+initial_result = Result.new((1..100), params: { limit: 5 })
 result = NumberCruncher.call(initial_result)
 result.value # =>[2, 4, 6, 8, 10]
 ```
@@ -125,10 +125,10 @@ result.value # =>[2, 4, 6, 8, 10]
     <li class="continue">4. <code>LimitSet</code></li>
 </ul>
 
-Ommitting the `limit` input will halt the pipeline with an error.
+Ommitting the `limit` param will halt the pipeline with an error.
 
 ```ruby
-initial_result = Result.new((1..100), input: {})
+initial_result = Result.new((1..100), params: {})
 
 result = NumberCruncher.call(initial_result)
 result.continue? # => false
@@ -142,29 +142,29 @@ result.errors # => { limit: ["Not set"] }
     <li class="halt">4. <code>LimitSet errors: {limit: ['Not set']}</code></li>
 </ul>
 
-`input` can be used for filtering lists, setting limits, defining transformations, etc. It's a flexible way to pass user input to the pipeline.
+`params` can be used for filtering lists, setting limits, defining transformations, etc. It's a flexible way to pass user input to the pipeline.
 
-## Input validation steps
+## Parameter validation steps
 
-It's possible to implement steps specialised in validating input and populatin errors.
+It's possible to implement steps specialised in validating params and populating errors.
 These steps can be put at the front of a pipeline, to ensure that no further steps run if the input is invalid.
 
 ```ruby
-class ValidateInputPresence
+class ValidateParamPresence
   def initialize(field)
     @field = field
   end
 
   def call(result)
-    return result.halt.with_error(@field, "Not set") if result.input[@field].nil?
+    return result.halt.with_error(@field, "Not set") if result.params[@field].nil?
 
     result
   end
 end
 
 NumberCruncher = Pipeline.new do |pl|
-  pl.step ValidateInputPresence.new(:limit)
-  pl.step LimitSet # <= this step expects input[:limit]
+  pl.step ValidateParamPresence.new(:limit)
+  pl.step LimitSet # <= this step expects params[:limit]
 end
 ```
 
@@ -173,7 +173,7 @@ There's no constraint to the kinds of APIs or DSLs exposed by these steps. A mor
 How exactly that step implements validations is not important, as long as it responds to `#call` and returns a `Result` with the relevant errors.
 
 ```ruby
-pl.step(ValidateInputs.new do
+pl.step(ValidateParams.new do
   attribute :limit, :integer
   attribute :order, :string, default: "asc"
 
@@ -186,7 +186,7 @@ In the next article I'll show more examples, when I talk about extending pipelin
 
 ## Context is king.
 
-I showed `input` and `errors`. `context` is a intended for steps to pass data between each other, or to accumulate data as the pipeline progresses.
+I showed `params` and `errors`. `context` is a intended for steps to pass data between each other, or to accumulate data as the pipeline progresses.
 The following step computes a count of odd numbers in the set, and passes it to the next step.
 
 ```ruby
@@ -226,5 +226,5 @@ result = UserProcessor.call(initial_result)
 result.context[:country_facets] # => { "US" => 10, "UK" => 5, ... }
 ```
 
-I'll rely on `input`, `errors` and `context` throughout the series to show how to build complex pipelines that can handle a variety of use cases.
+I'll rely on `params`, `errors` and `context` throughout the series to show how to build complex pipelines that can handle a variety of use cases.
 
