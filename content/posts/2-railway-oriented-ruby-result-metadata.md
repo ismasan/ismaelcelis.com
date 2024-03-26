@@ -186,7 +186,7 @@ In the next article I'll show more examples, when I talk about extending pipelin
 
 ## Context is king.
 
-I showed `params` and `errors`. `context` is a intended for steps to pass data between each other, or to accumulate data as the pipeline progresses.
+I showed `params` and `errors`. `context` is intended for steps to pass data between each other, or to accumulate data as the pipeline progresses.
 The following step computes a count of odd numbers in the set, and passes it to the next step.
 
 ```ruby
