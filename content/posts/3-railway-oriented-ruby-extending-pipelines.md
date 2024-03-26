@@ -146,7 +146,7 @@ end
 As workflows become more complex, it's helpful to have ways to trace and instrospect execution.
 For example, when a step halts the pipeline, I would like to know exactly what step it was, and at what depth in the pipeline it sits.
 
-Well deal with the latter first. The following tweaks `Pipeline#call` to keep track of the current step position relative to its parent pipeline.
+We'll deal with the latter first. The following tweaks `Pipeline#call` to keep track of the current step position relative to its parent pipeline.
 
 ```ruby
 class Pipeline
