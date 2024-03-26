@@ -8,6 +8,7 @@ theme = "paper"
   twitter = 'ismasan'                # twitter.com/YOUR_TWITTER_ID
   github = 'ismasan'                  # github.com/YOUR_GITHUB_ID
   env = 'production'                  # environment: production, development
+  description = 'Ramblings about code'
 [related]
   includeNewer = true
   threshold = 10
