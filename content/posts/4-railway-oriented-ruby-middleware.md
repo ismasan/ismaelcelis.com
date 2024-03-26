@@ -25,11 +25,11 @@ Here I'll show how to add middleware to the pipeline, to add tracing, logging, c
 
 ## Middleware
 
-Middleware is a bit of code that wraps around each step in the pipeline, adding functionality to it. See [Rack](https://github.com/rack/rack?tab=readme-ov-file#available-middleware-shipped-with-rack) for a classic example.
+Middleware is a bit of code that wraps around each step in the pipeline, adding functionality to it. See [Rack](https://github.com/rack/rack?tab=readme-ov-file#available-middleware-shipped-with-rack) for a well-known use case.
 
 As an example, I want to add middleware that adds `context[:halted_step]` to the `Result` instance, so that we know exactly what step halted the pipeline.
 
-As a started implementation, I'll tweak `Pipeline#step` to wrap all registered steps with a middleware that adds the `halted_step` to the result context if the step halts the pipeline.
+As a starter implementation, I'll tweak `Pipeline#step` to wrap all registered steps with a middleware that adds the `halted_step` to the result context if the step halts the pipeline.
 
 ```ruby
 class Pipeline
@@ -64,7 +64,7 @@ class StepTracker < SimpleDelegator
 end
 ```
 
-Now, `context[:halted_step]` will be set to the step that halted the pipeline, and `context[:trace]` will be set to the position of that step in the pipeline.
+Now, `context[:halted_step]` will be set to the step that halted the pipeline.
 
 We also get `context[:trace]` to show the position of the halted step in the pipeline, as shown [in the previous article](/posts/railway-oriented-ruby-extending-pipelines/#tracing-step-positions).
 
@@ -100,7 +100,7 @@ A framework-agnostic implementation for that is included in the [code gist](http
 
 ## CLIs
 
-A CLI-tailored pipeline class can leverage step tracing to print step positions and halt reasons to the console.
+A CLI-tailored pipeline class can leverage step tracing to print step positions and halt reasons to the terminal.
 
 ```ruby
 class StepPrinter < SimpleDelegator
@@ -136,7 +136,7 @@ class CachedStep < SimpleDelegator
   end
 
   def call(result)
-    cache_key = result.value.hash # or something else
+    cache_key = result.value.cache_key # or something else
     # Only call expensive operation if not in cache
     # and store the result in the cache
     @cache.fetch(cache_key) do
@@ -153,7 +153,7 @@ end
     <li>4. <code>ExpensiveOperation4</code><span class="note">pending</span></li>
 </ul>
 
-Caching can also be controlled selectively for one or more steps, via a custom sub-pipeline and a helper method.
+Caching could also be controlled selectively for one or more steps, via a custom sub-pipeline and a helper method. See [Extending Pipelines](/posts/railway-oriented-ruby-extending-pipelines/) for how to implement these helpers.
 
 ```ruby
 pl.step OkStep
