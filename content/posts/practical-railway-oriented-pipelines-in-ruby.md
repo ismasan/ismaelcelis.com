@@ -221,11 +221,19 @@ MultiplyBy = proc do |factor|
   end
 end
 
+# Limit set to first N elements
+LimitSet = proc do |limit|
+  proc do |result|
+    result.continue(result.value.first(limit))
+  end
+end
+
 # Compose the pipeline
 NumberCruncher = Pipeline.new do |pl|
   pl.step { |r| puts 'Logging'; r }
   pl.step ValidateSetSize.new(lte: 100)
   pl.step MultiplyBy.(2)
+  pl.step LimitSet.(5)
 end
 ```
 
@@ -241,6 +249,7 @@ result.continue? # => false
     <li class="continue">1. <code>Logging</code></li>
     <li class="halt">2. <code>ValidateSetSize.new(lte: 100)</code></li>
     <li class="never">3. <code>MultiplyBy.(2)</code></li>
+    <li class="never">4. <code>LimitSet.(5)</code></li>
 </ul>
 
 However, if all steps return a _continue_ result, the pipeline processes all steps and returns the final result.
@@ -257,6 +266,7 @@ result.value # => [2, 4, 6, 8, 10]
     <li class="continue">1. <code>Logging</code></li>
     <li class="continue">2. <code>ValidateSetSize.new(lte: 100)</code></li>
     <li class="continue">3. <code>MultiplyBy.(2)</code></li>
+    <li class="continue">4. <code>LimitSet.(5)</code></li>
 </ul>
 
 ## Composing pipelines
@@ -278,6 +288,7 @@ end
             <li>2.1. <code>Logging</code></li>
             <li>2.2. <code>ValidateSetSize.new(lte: 100)</code></li>
             <li>2.3. <code>MultiplyBy.(2)</code></li>
+            <li>2.4. <code>LimitSet.(5)</code></li>
         </ul>
     </li>
     <li>3. <code>Step3</code></li>
