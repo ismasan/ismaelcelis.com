@@ -188,8 +188,8 @@ def call(result)
 end
 ```
 
-Now, any step that returns a _halt_ will just skip further steps downstream.
-In other words, a step can return a _continue_ or a _halt_, but it can only even receive a _continue_ as argument.
+Now, any step that returns a _halt_ will just skip over further steps downstream.
+In other words, a step can return a _continue_ or a _halt_, but it can only ever receive a _continue_ as argument.
 
 ```
 #call(Result[Continue]) [Result[Continue], Result[Halt]]
