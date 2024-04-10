@@ -156,3 +156,19 @@ h2.has-anchor a.heading-anchor:hover {
     background-color: #c1f1f7;
     font-weight: bold;
 }
+
+.footer .icon-link {
+  display: flex;
+}
+.footer .icon-link a {
+  display: flex;
+}
+.footer .icon-link a:hover {
+  text-decoration: none;
+  border-bottom: 0;
+  opacity: 0.4;
+}
+.footer .icon-link img {
+  width: 16px;
+}
+
