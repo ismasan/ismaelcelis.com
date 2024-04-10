@@ -253,5 +253,5 @@ end
 
 In future articles I might explore the potential of middleware in more depth.
 
-In the next article, I'll touch testing pipelines and steps.
+In the next article, I'll touch on testing pipelines and steps.
 
