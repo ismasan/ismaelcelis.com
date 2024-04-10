@@ -61,7 +61,7 @@ This means that complex operations can now be packaged up and validate their own
 
 ```ruby
 # A portable step to multiply each number in the set by a factor.
-Multiply = Pipeline.new do |pl|
+Multiply = ValidatingPipeline.new do |pl|
   pl.params do
     field(:factor).type(:integer).required.default(1)
   end
@@ -74,7 +74,7 @@ end
 
 # A portable step to limit the set to the first N elements.
 # It defines its own required parameters.
-LimitSet = Pipeline.new do |pl|
+LimitSet = ValidatingPipeline.new do |pl|
   pl.params do
     field(:limit).type(:integer).required.default(5)
   end
