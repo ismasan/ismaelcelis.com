@@ -1,6 +1,6 @@
 +++
 draft = false
-date = 2024-09-12T11:00:00Z
+date = 2024-09-16T11:00:00Z
 title = "The Decide, Evolve, React pattern in Ruby"
 description = "The Decide, Evolve, React pattern in Ruby, explained step by step"
 images = ["/images/2024/decide-evolve-react-pattern/diagram1.png"]
