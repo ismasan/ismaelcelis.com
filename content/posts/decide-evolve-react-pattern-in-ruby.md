@@ -129,7 +129,7 @@ ItemAddedToCart = Data.define(:item_id, :name, :price, :quantity)
 ItemRemovedFromCart = Data.define(:item_id)
 ```
 
-Once the _decide_ function evaluates a command and returns events, we iterate the events and "evolve" the state of the cart.
+Once the _decide_ function evaluates a command and returns events, we iterate the events and "evolve" the state of the cart accordingly.
 
 ```ruby
 # @param cart [Cart]
