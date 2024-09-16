@@ -192,7 +192,7 @@ Regardless of the implementation details, this interlocking of events and decisi
 </ul>
 
 
-In many cases, you'll want your _react_ step to **initiate new command flows**. For example by scheduling a new command that is then picked up by a background worker and fed back in the _decide_ step.
+In many cases, you'll want your _react_ step to **initiate new command flows**. For example by scheduling a new command that is then picked up by a background worker and fed back into the _decide_ step.
 
 ```ruby
 def react(cart, events)
