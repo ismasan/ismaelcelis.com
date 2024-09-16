@@ -289,7 +289,7 @@ class CartDomain < StateHandler
 end
 ```
 
-And then you use this whereever you handle user input in your app (controllers, background workers, CLIs, etc).
+And then you use this wherever you handle user input in your app (controllers, background workers, CLIs, etc).
 
 ```ruby
 # POST /carts/:id/items
