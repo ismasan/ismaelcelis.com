@@ -349,9 +349,9 @@ It can also make the code itself more cohesive and self-documenting.
 
 ### Drawbacks
 
-Nothing is free, unfortunately. This pattern is more complex than just updating state directly, and it can be overkill for simple CRUD systems. It also requires a bit of boilerplate to set up, and can be hard to understand for developers unfamiliar with it. It may also conflict with data-management patterns that want to control side effects in their own way. For example ORM callbacks. It'll take some discipline to avoid using those and registering side effects as explicit reactions instead.
+Nothing is free, unfortunately. This pattern is more complex than just updating state directly, and it can be overkill for simple CRUD systems. It also requires a bit of boilerplate to set up, and can be hard to understand for developers unfamiliar with it. It may also conflict with data-management libraries that want to own side effects triggered by state changes. For example ORM callbacks. It'll take some discipline to avoid using those and registering side effects as explicit reactions instead.
 
-### EventSourced vs StateStored systems
+### Event-sourced vs state-stored systems
 
 As mentioned at the start, this pattern is a super-set of Event Sourcing. The version illustrated here uses a "state-stored" implementation where the current state of entities is fetched from a regular database, and later persisted back to it. This plays well with traditional CRUD systems that just want to consolidate state management and auditing.
 
