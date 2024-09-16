@@ -126,7 +126,7 @@ The event classes are also just structs.
 
 ```ruby
 ItemAddedToCart = Data.define(:item_id, :name, :price, :quantity)
-ItemRemovedToCart = Data.define(:item_id, :name, :price, :quantity)
+ItemRemovedFromCart = Data.define(:item_id)
 ```
 
 Once the _decide_ function evaluates a command and returns events, we iterate the events and "evolve" the state of the cart.
