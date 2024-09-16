@@ -240,7 +240,7 @@ In real code you might want to abstract some of the implementation into more reu
 ```ruby
 module Commands
   # Define commands with structural validation of attributes.
-  # For example using AcitveModel::Validations, Dry-Types, etc.
+  # For example using ActiveModel::Validations, Dry-Types, etc.
   class AddItemToCart < Command
     attribute :cart_id, String
     attribute :product_id, Integer
