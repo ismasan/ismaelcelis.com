@@ -154,7 +154,7 @@ def evolve(cart, events)
 end
 ```
 
-That's _evolve_ done. Given a piece of state and one or more events, return an updated state.
+That's _evolve_ done. Given a piece of state and one or more events, update the state.
 
 ### 3. React
 
