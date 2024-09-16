@@ -183,7 +183,7 @@ Implementation will vary, but I'm wrapping the above in a transaction to ensure 
 </blockquote></p>
 
 
-Regardless of the implementation details, this locking of events and decision logic together is what gives you a lossless audit trail of changes in your system.
+Regardless of the implementation details, this interlocking of events and decision logic together is what gives you a lossless audit trail of changes in your system.
 
 <ul class="execution-trace">
     <li class="running">1. <code>2024-09-16 11:28:46 cart-123</code> 2x Apples added to cart</li>
