@@ -343,7 +343,7 @@ expect(cart.items.size).to eq(1)
 
 ### Documentation
 
-An interesting outcome of this pattern is that it also "flattens" the internal API of your domain into a list of actions (commands), on the one hand, a list of known state changes (events), and a list of side effects. Together they form a sort of "protocol" of what your app can do. For example you could list your commands and generate documentation for your API.
+An interesting outcome of this pattern is that it also "flattens" your domain's internal API into a list of actions (commands), a list of known state changes (events), and a list of side effects. Together they form a comprehensive "protocol" of what your app can do. For example you could list your commands and generate documentation for your API.
 
 It can also make the code itself be more cohesive and self-documenting.
 
