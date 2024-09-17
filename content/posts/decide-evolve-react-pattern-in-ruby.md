@@ -329,6 +329,43 @@ decide Commands::AddItemToCart do |cart, command|
   # ...
 end
 ```
+### Side effects as commands
+In many cases you'll want side effects in the _react_ step to be themselves logged as events, and the logic to run those effects might require its own decision process.
+In this scenario it makes a lot of sense to have _react_ just issue new commands, which in turn will run the side effects and log events with the result.
+
+We can modify our API so that _react_ has the signature `#react(state, events) => Array<Command>`. Any new commands returned by react will be scheduled to run next.
+In this way, all side effects are encoded as just another `command -> events -> react` workflow.
+
+```ruby
+# When an order is placed, schedule a new command to send an email
+react Events::OrderPlaced do |cart, event|
+  [Commands::SendConfirmationEmail.new(cart_id: cart.id)]
+end
+
+# Then handle the new command and send the email and log events
+decide Commands::SendConfirmationEmail do |cart, command|
+  raise "could not send email for #{cart.id}" unless Mailer.send_confirmation_email(cart)
+
+  [Events::EmailConfirmationSent.new(cart_id: cart.id)]
+end
+
+# optional handle the EmailConfirmationSent event if you need to update the cart
+evolve Events::EmailConfirmationSent do |cart, event|
+  cart.email_confirmation_sent = true
+end
+```
+
+This "flattens" the implementation even further by making all operations and their side-effects part of the same protocol, and we get a more complete audit trail to boot.
+
+
+<ul class="execution-trace">
+    <li class="running">1. <code>2024-09-16 11:28:46 cart-123</code> 2x Apples added to cart</li>
+    <li class="running">2. <code>2024-09-16 11:28:59 cart-123</code> 1x Apples removed from cart</li>
+    <li class="running">3. <code>2024-09-16 11:29:10 cart-123</code> 3x Oranges added to cart</li>
+    <li class="running">4. <code>2024-09-16 11:40:16 cart-123</code> Order placed</li>
+    <li class="continue">4. <code>2024-09-16 11:40:28 cart-123</code> Confirmation email sent</li>
+</ul>
+
 ### Testing
 
 By segregating the handling of input (commands), mutations (events) and side-effects (reactions) you can test each part in isolation.
