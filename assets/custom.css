@@ -122,7 +122,8 @@ h2.has-anchor a.heading-anchor:hover {
 .execution-trace li > code {
     margin-inline: 0;
 }
-.execution-trace .halt > code {
+.execution-trace .halt > code,
+.execution-trace .error > code {
     color: #c00;
     background-color: #fdd;
     font-weight: bold;

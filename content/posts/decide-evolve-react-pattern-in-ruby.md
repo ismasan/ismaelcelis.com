@@ -366,6 +366,39 @@ This "flattens" the implementation even further by making all operations and the
     <li class="continue">4. <code>2024-09-16 11:40:28 cart-123</code> Confirmation email sent</li>
 </ul>
 
+### Errors as events
+So far I've been using exceptions to catch errors and bail out of command handling. But in many cases you'll want to capture some errors as domain events that allow the system to react or recover from them.
+
+```ruby
+decide Commands::AddItemToCart do |cart, command|
+  product = DB.find_product(command.product_id)
+  # Missing product is a genuine exception
+  raise "Product not found" unless product
+  # Out of stock is expected, and can be handled by the domain
+  # Return an event that captures the error
+  if product.inventory < command.quantity
+    return [Events::ItemOutOfStock.new(cart_id: cart.id, product_id: product.id, quantity: command.quantity, available: product.inventory)]
+  end
+
+  [Events::ItemAddedToCart.new(product_id: product.id, ...)]
+end
+
+# We can now react to Events::ItemOutOfStock and show a notice to the user, 
+# offer them alternatives of discounts, etc.
+react Events::ItemOutOfStock do |cart, event|
+  # ...
+end
+```
+
+And, once more, we get a fuller picture of the cart's history, for free:
+
+<ul class="execution-trace">
+    <li class="running">1. <code>2024-09-16 11:28:46 cart-123</code> 2x Apples added to cart</li>
+    <li class="running">2. <code>2024-09-16 11:28:59 cart-123</code> 1x Apples removed from cart</li>
+    <li class="running">3. <code>2024-09-16 11:29:10 cart-123</code> 3x Oranges added to cart</li>
+    <li class="error">4. <code>2024-09-16 11:40:16 cart-123</code> Oranges out of stock: only 2 available</li>
+</ul>
+
 ### Testing
 
 By segregating the handling of input (commands), mutations (events) and side-effects (reactions) you can test each part in isolation.
