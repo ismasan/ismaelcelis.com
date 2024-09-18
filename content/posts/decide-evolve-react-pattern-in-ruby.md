@@ -384,7 +384,7 @@ decide Commands::AddItemToCart do |cart, command|
 end
 
 # We can now react to Events::ItemOutOfStock and show a notice to the user, 
-# offer them alternatives of discounts, etc.
+# offer them alternatives or discounts, etc.
 react Events::ItemOutOfStock do |cart, event|
   # ...
 end
