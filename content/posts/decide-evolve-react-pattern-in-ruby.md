@@ -331,7 +331,7 @@ end
 ```
 ### Side effects as commands
 In many cases you'll want side effects in the _react_ step to be themselves logged as events, and the logic to run those effects might require its own decision process.
-In this scenario it makes a lot of sense to have _react_ just issue new commands, which in turn will run the side effects and log events with the result.
+In this scenario it makes a lot of sense to have _react_ just issue new commands, which in turn [will run the side effects](/posts/event-sourcing-ruby-command-layer/#commands-and-side-effects) and log events with the result.
 
 We can modify our API so that _react_ has the signature `#react(state, events) => Array<Command>`. Any new commands returned by react will be scheduled to run next.
 In this way, all side effects are encoded as just another `command -> events -> react` workflow.
@@ -365,6 +365,8 @@ This "flattens" the implementation even further by making all operations and the
     <li class="running">4. <code>2024-09-16 11:40:16 cart-123</code> Order placed</li>
     <li class="continue">4. <code>2024-09-16 11:40:28 cart-123</code> Confirmation email sent</li>
 </ul>
+
+Also, nothing stops you from [saving commands to history](/posts/event-sourcing-ruby-command-layer/#committing-commands-to-history) as well as events, which can give you a direct cause-and-effect view of you user's actions.
 
 ### Errors as events
 So far I've been using exceptions to catch errors and bail out of command handling. But in many cases you'll want to capture some errors as domain events that allow the system to react or recover from them.
