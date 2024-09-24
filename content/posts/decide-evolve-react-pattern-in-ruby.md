@@ -302,7 +302,7 @@ CartDomain.run(command)
 
 ### State machines
 
-You'll already have noticed that this basically describes a state machine. The fact is that _any_ change to state in any app is a state machine, whether you think of it that way or not. This pattern makes it explicit and consistent for all state mutations in your app.
+You'll already have noticed that this basically describes a state machine. The fact is that **any change to state in any app is a state machine**, whether you think of it that way or not. This pattern makes that fact explicit and consistent for all state mutations in your app.
 
 Note that you can still model specific "business states" on top of this. The following example adds an `order_status` field to shopping carts, and events to track the transition from an open shopping cart to a placed order.
 
@@ -321,7 +321,7 @@ react Events::OrderPlaced do |cart, event|
 end
 ```
 
-You can go back to previous event handlers in your domain and encode business rules, such as forbidding mutations of closed carts.
+You can go back to previous event handlers in your domain and encode business rules, such as forbidding mutations on closed carts.
 
 ```ruby
 decide Commands::AddItemToCart do |cart, command|
@@ -412,6 +412,8 @@ cart = ShoppingCart.new
 domain.evolve(cart, event)
 expect(cart.items.size).to eq(1)
 ```
+
+Testing evolvers, in particular, only requires a piece of state and a list of events, without any concerns for storage or side-effects.
 
 ### Documentation
 
