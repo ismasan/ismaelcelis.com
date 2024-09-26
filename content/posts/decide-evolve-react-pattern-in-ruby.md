@@ -406,9 +406,9 @@ And, once more, we get a fuller picture of the cart's history, for free:
 By segregating the handling of input (commands), mutations (events) and side-effects (reactions) you can test each part in isolation.
 
 ```ruby
-domain = CartDomain.new(id: 'cart-123')
-event = Events::ItemAddedToCart.new(cart_id: cart.id, product_id: 1, ...)
+domain = CartDomain.new
 cart = ShoppingCart.new
+event = Events::ItemAddedToCart.new(cart_id: cart.id, product_id: 1, ...)
 domain.evolve(cart, event)
 expect(cart.items.size).to eq(1)
 ```
