@@ -67,7 +67,7 @@ command = AddItemToCart.new(cart_id: 'cart-123', product_id: 3, quantity: 1)
 
 ... And a cart instance (fetched from the database, or a new instance)
 ```ruby
-cart = DB.find_cart(command.cart_id) || Cart.new(cart.id)
+cart = DB.find_cart(command.cart_id) || Cart.new(command.cart_id)
 ```
 
 We feed the cart and the command to the _decider_ function (or class, module, etc). Its job is to evaluate the current state of the cart, the command, and decide whether an item can be added to the cart.
