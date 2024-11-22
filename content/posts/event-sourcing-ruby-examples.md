@@ -26,7 +26,7 @@ Conversely, the current state of objects in the app is obtained by "replaying" a
 
 There's no database tables, no SQL joins, no CRUD. Effectively the Audit Trail, an _ordered log of events_, is the canonical data backbone from which all current state is derived.
 
-> This is a strange concept if you come from the CRUD world, but it's actually an omnipresent one: Git, database replication logs and double-entry accounting ledgers all work in a similar way.
+> This is a strange concept if you come from the CRUD world, but it's actually an omnipresent one: database replication logs and double-entry accounting ledgers all work in a similar way. Git is not event-sourced, but it shows the value of keeping history around.
 
 As an illustration, take your latest bank account statement. The main data structure is an ordered, append-only log of credits and debits to your account. Any current state (your balance) is derived by adding up these historical events, in order.
 
