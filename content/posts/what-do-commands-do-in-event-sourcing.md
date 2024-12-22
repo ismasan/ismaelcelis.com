@@ -70,7 +70,7 @@ But it introduced tension in my mental model. If processors (the React step, whe
 ![Smart processor](/images/2024/what-do-commands-do/smart-processor.png)
 
 I hated this. Processors were _smart_! All of a sudden, my system's _capabilities_ were spread out onto two different layers. Command handlers and processors. 
-This implied that React wasn't just just naively _reacting_ in Decide's footsteps, and Decide wasn't the only decision-maker in town!
+This implied that React wasn't just naively _reacting_ in Decide's footsteps, and Decide wasn't the only decision-maker in town!
 
 ## Commands really, _really_ are about state changes
 
