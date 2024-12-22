@@ -20,7 +20,7 @@ I'm putting this in writing mainly to track my own learning and to share it with
 
 ## The assumption: commands are about "doing" things
 
-Coming from CRUD and OO, my gut understanding of Commands in ES/CQRS architectures is that they _do_ things. In my previous post about [the command layer](/posts/event-sourcing-ruby-command-layer/) I wrote that a command's role is to:
+Coming from CRUD and OO, my gut understanding of Commands and their handlers in ES/CQRS is that they _do_ things. In my previous post about [the command layer](/posts/event-sourcing-ruby-command-layer/) I wrote that a command's role is to:
 
 >> Inspect the current state, along with whatever input your command expects, run any validations needed, <strong class="highlight-negative">fetch any extra data needed to fulfill the command</strong>, and decide if any new events need to be issued.
 
