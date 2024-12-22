@@ -80,7 +80,7 @@ It took [this old comment](https://softwareengineering.stackexchange.com/questio
 
 ![ES domain tracks changes](/images/2024/what-do-commands-do/stackexchange-comment.png)
 
-It's not that pushing side-effects to the infrastructure layer is just a matter of convenience. It's that an event-sourced domain is defined by the state changes is track, not the operations it performs. The entire domain is nothing but a big state machine (and command handlers are just the state guards?)
+It's not that pushing side-effects to the infrastructure layer is just a matter of convenience. It's that an event-sourced domain is defined by the state changes it tracks, not the operations it performs. The entire domain is nothing but a big state machine (and command handlers are just the state guards?)
 
 To be clear, it was always clear to me that events in Event Sourcing define state machines. But I always assumed that command handlers sat on top of that and mostly encapsulated entire capabilities including side-effects.
 
