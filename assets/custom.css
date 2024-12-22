@@ -173,3 +173,7 @@ h2.has-anchor a.heading-anchor:hover {
   width: 16px;
 }
 
+.highlight-negative {
+  color: #c00;
+  font-weight: bold;
+}
