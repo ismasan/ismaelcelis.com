@@ -5,6 +5,7 @@ date: 2025-01-14T11:55:54Z
 authors: ["Ismael Celis"]
 tags: ["podcast", "eventsourcing", "cqrs"]
 description: "Notes from the Dead Code Podcast"
+images: ["/images/2025/2025-01-dead-code-podcast-notes.png"]
 ---
 
 I was recently invited to chat at the [Dead Code podcast](https://shows.acast.com/dead-code) (thank you for the invite!), about Event Sourcing and Ruby. Here are some notes (and corrections!) from the conversation.
