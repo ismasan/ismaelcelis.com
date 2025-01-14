@@ -34,13 +34,13 @@ While Event Sourcing on its own is only concerned with "sourcing" current state 
 
 You can definitely use Event Sourcing in _immediately consistent_ systems, but where it really shines (in my opinion) is when you abandon the illusion of consistency across domain boundaries and embrace the [eventually-consistent](https://en.wikipedia.org/wiki/Eventual_consistency) relationships between reality and software designed to represent it. 
 
-I briefly touched on the example of products in a warehouse getting stolen, lost or broken while the software still thinks they're available to sell. It doesn't matter how careful you are about your database transactions. Reality will always get out of sync with your data, and Event Sourcing is a good mechanism to manage and compensate for those scenarios.
+I briefly touched on the example of products in a warehouse getting stolen, lost or broken while the software still thinks they're available to sell. It doesn't matter how careful you are about your database transactions: **reality will always get out of sync with your data**, and Event Sourcing offers both a mental model and a mechanism to manage and compensate for those scenarios.
 
 #### Concurrency boundaries
 
 In most <abbr title="Create, Read, Update, Delete">CRUD</abbr> systems, concurrency is an implementation detail, usually handled in configuration. In Event Sourcing, concurrency is elevated to a first-class component of the mental model, because command handlers (or "deciders", the bit of the architecture where you guard domain invariants and produce new events) exist as little islands of guaranteed consistency in a sea of eventual consistency (see above). This makes these components the natural "units of concurrency". Not dissimilar from [the Actor Model](https://en.wikipedia.org/wiki/Actor_model).
 
-It's in fact concurrency and eventual consistency that I've been trying to explore in my - early stages - [Sourced](https://github.com/ismasan/sourced?tab=readme-ov-file#concurrency-model) library.
+It's in fact concurrency and eventual consistency that I've been trying to explore in my [Sourced](https://github.com/ismasan/sourced?tab=readme-ov-file#concurrency-model) library, as early-stages as it is at the time of this writing.
 
 
 #### Modeling and documentation
