@@ -16,7 +16,7 @@ I enjoyed the conversation and I hope it was useful to some people. In an attemp
 
 ### Corrections
 
-* I mentioned Jeremie Chassaing's excellent blog post [Functional Event Sourcing Decider](https://thinkbeforecoding.com/post/2021/12/17/functional-event-sourcing-decider), but I said the examples were in C# when I should have said F#. I was speaking _out of tune_, if you will.
+* I mentioned Jeremie Chassaing's excellent blog post [Functional Event Sourcing Decider](https://thinkbeforecoding.com/post/2021/12/17/functional-event-sourcing-decider), but I said the examples were in C# when I should have said F#. I was speaking _out of tune_, if you will 🥁.
 
 * I gave _commands_ perhaps more emphasis than I should have. I've written about [the command layer](/posts/event-sourcing-ruby-command-layer/) as a general abstraction before, and its [different interpretations](/posts/what-do-commands-do-in-event-sourcing/) in Event Sourcing. But the role of commands is actually a bit of a hot topic in some quarters, and I should have focused a bit more on the "core" pattern around [state and events](/posts/event-sourcing-ruby-examples/).
 
