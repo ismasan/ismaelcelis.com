@@ -177,3 +177,12 @@ h2.has-anchor a.heading-anchor:hover {
   color: #c00;
   font-weight: bold;
 }
+
+body .post-entry a.read-more {
+  font-size: 2rem;
+  display: block;
+  text-align: right;
+}
+body .post-entry .post-entry-summary {
+  margin-top: 2rem;
+}

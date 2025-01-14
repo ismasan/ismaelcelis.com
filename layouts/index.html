@@ -1,12 +1,25 @@
 {{ define "main" }}
 
-<!-- $pages -->
-{{ $pages := union .RegularPages .Sections }}
-<!---->{{ if .IsHome }} {{ $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{ $latestPost := index (where .Site.RegularPages "Type" "in" site.Params.mainSections) 0 }}
+{{ with $latestPost }}
+  <article class="post-entry in-home">
+    <a href="{{ .Permalink }}">{{ .Title }}</a>
+    <time>{{ .Date | time.Format ":date_medium" }}</time>
+    <span class="meta">{{ .ReadingTime }} minutes read</span>
+    {{ if .Params.featuredImage }}
+      <a href="{{ .Permalink }}">
+        <img src="{{ .Params.featuredImage }}" loading="lazy">
+      </a>
+    {{ end }}
+    <div class="post-entry-summary">{{ .Summary }}</div>
+    <a class="read-more" href="{{ .RelPermalink }}">Read more →</a>
+  </article>
 {{ end }}
 
 <!-- Articles -->
-{{ $paginator := .Paginate $pages }} {{ range $index, $page := $paginator.Pages }}
+{{ $paginator := .Paginate (after 1 (where .Site.RegularPages "Type" "in" site.Params.mainSections)) 20 }}
+
+{{ range $index, $page := $paginator.Pages }}
 <article class="post-entry in-home">
   <a href="{{ .Permalink }}">{{ .Title }}</a>
   <time>{{ .Date | time.Format ":date_medium" }}</time>

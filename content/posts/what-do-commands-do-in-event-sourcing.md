@@ -4,6 +4,7 @@ date = 2024-12-22T11:00:00Z
 title = "What do commands do in Event Sourcing"
 description = "Understanding the role of commands in Event Sourcing"
 images = ["/images/2024/what-do-commands-do/thumbnail.png"]
+featuredImage = "/images/2024/what-do-commands-do/smart-processor.png"
 slug = "what-do-commands-do-in-event-sourcing"
 authors = ["Ismael Celis"]
 tags = ["design patterns", "eventsourcing", "cqrs", "DDD"]
