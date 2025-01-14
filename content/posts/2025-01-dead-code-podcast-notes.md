@@ -32,9 +32,9 @@ While Event Sourcing on its own is only concerned with "sourcing" current state 
 
 #### Eventual Consistency
 
-You can definitely use Event Sourcing in _immediately consistent_ systems, but where it really shines (in my opinion) is when you abandon the illusion of consistency across domain boundaries and embraces the [eventually-consistent](https://en.wikipedia.org/wiki/Eventual_consistency) relationships between reality and software designed to represent it. 
+You can definitely use Event Sourcing in _immediately consistent_ systems, but where it really shines (in my opinion) is when you abandon the illusion of consistency across domain boundaries and embrace the [eventually-consistent](https://en.wikipedia.org/wiki/Eventual_consistency) relationships between reality and software designed to represent it. 
 
-I briefly touched on the example of products in a warehouse getting stolen, lost or broken while the software still thinks they're available to sell. It doesn't matter how careful you are about your database transactions. Reality will always get out of sync with your data, and Event Sourcing is a good mechanism to manage and compensate those scenarios once you let go of the illusion of immediate consistency.
+I briefly touched on the example of products in a warehouse getting stolen, lost or broken while the software still thinks they're available to sell. It doesn't matter how careful you are about your database transactions. Reality will always get out of sync with your data, and Event Sourcing is a good mechanism to manage and compensate for those scenarios.
 
 #### Concurrency boundaries
 
@@ -43,17 +43,18 @@ In most <abbr title="Create, Read, Update, Delete">CRUD</abbr> systems, concurre
 It's in fact concurrency and eventual consistency that I've been trying to explore in my - early stages - [Sourced](https://github.com/ismasan/sourced?tab=readme-ov-file#concurrency-model) library.
 
 
-#### Modeling 
+#### Modeling and documentation
 
 The way in which Event Sourcing can make the domain model "shallower" by decoupling concepts can also make it easier to model and diagram the domain before even writing any code. Instead of complex UML diagrams you can describe the entire behaviour of a system in terms of events that happen in the domain. This is the drive behind [Event Storming](https://www.eventstorming.com) and [Event Modeling](https://eventmodeling.org), and I recommend looking into those.
 
 The inverse is also true: given the right affordances in your code, Event Sourcing can make it easier to generate diagrams and documentation from it. Also something I've been exploring in my code.
 
-#### Some references
+#### Some resources
 
 * [This](https://www.youtube.com/watch?v=AEbBCjo-WGM) is an excellent and short video series explaining the general ES/CQRS set of patterns.
 * The [DDD-CQRS-ES](https://discord.gg/sEZGSHNNbH) Discord is full of helpful people and fascinating discussions.
 * The [Understanding Event Sourcing](https://leanpub.com/eventmodeling-and-eventsourcing) book is an excellent introduction to implementing event-sourced systems with the help of Event Modeling.
+* [Async API](https://www.asyncapi.com/en) is a specification and set of tools to help model and document event-driven systems in general. Think [Open API](https://www.openapis.org) but for events.
 
 And the Ruby libraries I mentioned in the podcast:
 
