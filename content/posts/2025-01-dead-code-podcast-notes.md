@@ -42,6 +42,10 @@ In most <abbr title="Create, Read, Update, Delete">CRUD</abbr> systems, concurre
 
 It's in fact concurrency and eventual consistency that I've been trying to explore in my [Sourced](https://github.com/ismasan/sourced?tab=readme-ov-file#concurrency-model) library, as early-stages as it is at the time of this writing.
 
+#### Durable execution
+
+Durable execution is the idea that you can split an operation into small idempotent steps, and persist the state of each step as it progresses. If one of the steps crashes, you can seamlessly retry the operation from the last persisted state "checkpoint". 
+Event Sourcing can lend itself for this kind of approach pretty naturally, as operations can be modeled as workflows where each "step" leaves behind a trail of events that can be replayed to reconstitute the state of the operation at any point in time. 
 
 #### Modeling and documentation
 
