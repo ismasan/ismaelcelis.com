@@ -185,4 +185,17 @@ body .post-entry a.read-more {
 }
 body .post-entry .post-entry-summary {
   margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+body .post-entry .post-entry-summary a {
+  display: inline;
+  font-size: 2rem;
+  padding-bottom: .2rem;
+  font-weight: 500;
+  border-bottom: 2px solid var(--pro);
+}
+
+body .post-entry .post-entry-summary a:hover {
+  text-decoration: none;
 }

@@ -14,7 +14,7 @@ series = []
 +++
 
 I've been playing with and exploring [Event Sourcing](/posts/event-sourcing-ruby-examples/) for a while now, but only recently realised that part of my thinking might have been muddled by unexamined assumptions about what commands are and what they do in the context of Event Sourcing.
-
+<!--more-->
 These assumptions started showing their limits after I started [building something real](https://github.com/ismasan/sourced) based on my (possibly mis-interpreted) understanding of the [Decide, Evolve, React](/posts/decide-evolve-react-pattern-in-ruby/) pattern.
 
 I'm putting this in writing mainly to track my own learning and to share it with others who might be in the same boat.
