@@ -4,7 +4,7 @@ title: "Dead Code Podcast Notes"
 date: 2025-01-14T11:55:54Z
 authors: ["Ismael Celis"]
 tags: ["podcast", "eventsourcing", "cqrs"]
-description: "Notes from the Dead Code Podcast"
+description: "Notes from my Dead Code Podcast episode on Event Sourcing and Ruby."
 images: ["/images/2025/2025-01-dead-code-podcast-notes.png"]
 ---
 
