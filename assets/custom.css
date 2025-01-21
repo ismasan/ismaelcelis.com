@@ -199,3 +199,9 @@ body .post-entry .post-entry-summary a {
 body .post-entry .post-entry-summary a:hover {
   text-decoration: none;
 }
+
+@media (max-width:1199px) {
+  body .logo {
+    min-width: 15em;
+  }
+}
