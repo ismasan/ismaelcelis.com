@@ -4,7 +4,7 @@ title: "Give it time"
 date: 2025-04-04T11:55:54Z
 authors: ["Ismael Celis"]
 tags: ["architecture","ddd"]
-description: "We understand reality as a timeline, but model software as an object graph."
+description: "Modeling your domain as timelines instead of object graphs"
 images: []
 ---
 
@@ -57,7 +57,7 @@ line_item = LineItem.create(order: order, variant: variant, ...)
 ```
 
 Because of this malleability, domain invariants become hard to enforce and reason about.
-For example, if a business rule says that an order can only have up to 5 line items: that validation probably lives in the context of an _order_. But since the object graph allows us to create line items directly, we're forced to resort to callbacks and other indirect methods.
+For example, if a business rule says that an order can only have up to 5 line items: that validation probably lives in the context of an _order_. But since the object graph allows us to create line items directly, we're forced to resort to callbacks and other indirect methods to enforce invariants across whole sections of the graph.
 
 ```ruby
 class Order
@@ -71,7 +71,7 @@ class LineItem
 end
 ```
 
-Moreover: business rules are often contextual. The order can only have 5 line items _if_ the order is in a certain state, or if the customer is a certain type. Rules are not necessarily true facts about the entire graph, but relative to behaviour, data and time.
+Moreover: business rules are often contextual. The order can only have 5 line items _if_ the order is in a certain state, or if the customer is a certain type. Rules are not necessarily properties of the graph structure itself, but relative to behaviour, data and time.
 
 ### Implicit command layer
 
@@ -84,7 +84,7 @@ def create
   order.line_items.create(line_item_params)
 end
 ```
-Like public methods in an Aggregate, these handlers define the entry points into the system. They constitute the system's _command layer_, albeit somewhat informally, and tied to a specific transport layer.
+These handlers define the entry points into the system. They constitute the system's _command layer_, albeit somewhat informally, and tied to a specific execution context - handling HTTP requests.
 
 If we then need to run some capabilities in the background, or as CLI tasks or scheduled jobs, we're required to model and implement those entry points in different ways, tied to their distinct execution contexts.
 
@@ -137,7 +137,7 @@ line_item = order.add_line_item(variant_id: 10, ...)
 
 DDD's Aggregate and [bounded contexts](https://martinfowler.com/bliki/BoundedContext.html) can also help keep different parts of the model decoupled from each other by defining strict boundaries around them. In our example above, we can decide that variant prices belong to a _pricing_ context, and that orders belong to a _sales_ context. With this constraint in mind we then define the contract between the two contexts.
 
-### Standalone command layer
+### Standalone command objects
 
 Yet another way to bring a system's behaviour to the fore -and abstract it away from execution context- is to have explicit command objects. These are sometimes referred to as "service objects" (a mis-identification that usually belies a misunderstanding of the role they play).
 
@@ -207,13 +207,23 @@ Commands initiate action, and may lead to state changes and side effects. Comman
 
 ![Cause and effect](/images/2025/timelines/cause-and-effect.svg)
 
-There's an implicit sense of direction here. There's a _before_ and an _after_. There's _time_. 
+There's an explicit sense of direction here. There's a _before_ and an _after_. There's _time_. 
 Behaviour implies time. Behaviour can be modeled and tracked as a sequence of effects, and effects are _events_ that happen over time.
 
 Your domain can be modeled as a timeline instead of a graph.
 
+### Time is composable
+
 * Command => effect slices can be composed into workflows.
+
+### Time surfaces concurrency
+
+### When, not where
+
 * Workflows can be defined independent of execution context.
+
+### The deep state
+
 * The deep state. State is derived from events.
 * Graphs are deep, timelines are shallow
 
