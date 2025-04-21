@@ -245,7 +245,7 @@ Derived state can be used to drive the next command in the workflow.
 
 These are the basic conventions of [Event Modeling](https://eventmodeling.org), which I'm using (liberally) in this post.
 
-Note that there's no canonical "data model" here. There are _ad-hoc_ data models derived from the system's behaviour, and they're essentially throw-away projections or views, in service of the next transition in the state machine, or whatever user-facing screen or report needed.
+Note that there's no canonical "data model" here. There are _ad-hoc_ data models derived from the system's behaviour, and they're essentially throw-away projections or views, in service of the next transition in the state machine, or whatever user-facing screen or report is needed.
 
 <figure class="post-figure">
   <img
