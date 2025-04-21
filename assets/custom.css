@@ -205,3 +205,13 @@ body .post-entry .post-entry-summary a:hover {
     min-width: 15em;
   }
 }
+/* Images in <figure> tag
+* --------------------------------*/
+.post-figure {
+  margin: 0 0 4rem;
+}
+.post-figure figcaption {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--lit);
+}
