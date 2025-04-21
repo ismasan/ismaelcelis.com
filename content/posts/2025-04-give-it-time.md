@@ -1,7 +1,7 @@
 ---
 draft: false
 title: "Give it time"
-date: 2025-04-21T23:59:00Z
+date: 2025-04-21T22:59:00Z
 authors: ["Ismael Celis"]
 tags: ["architecture","ddd","eventsourcing"]
 description: "Modeling your domain as timelines instead of object graphs"
