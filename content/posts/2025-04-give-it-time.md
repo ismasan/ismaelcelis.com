@@ -1,11 +1,11 @@
 ---
-draft: true
+draft: false
 title: "Give it time"
-date: 2025-04-04T11:55:54Z
+date: 2025-04-22T00:42:00Z
 authors: ["Ismael Celis"]
 tags: ["architecture","ddd","eventsourcing"]
 description: "Modeling your domain as timelines instead of object graphs"
-images: []
+images: ["/images/2025/give-it-time.png"]
 ---
 
 Our experience of reality is based on the passage of time. Things begin and end, events happen one after the other. The world _changes_. 
