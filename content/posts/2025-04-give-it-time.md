@@ -13,9 +13,7 @@ And yet we model software as static object graphs frozen in time.
 
 <!--more-->
 
-This sort of makes sense. While I'm used to going through my day as events in time (wake up, have breakfast, shower, _really_ wake up, etc), the act of _understanding_ feels like building a graph. When I start a new job, I want to grasp the _current_ structure of the system. What department or team am I part of, how does this team interact with other teams in the organization, etc. The history of how the current structure came to be is not immediately relevant to me. 
-
-More to the point: when I plan for a new project, my mind tends to gradually form a static picture of the system. I try to understand how the different components interact with each other, and how they relate to the business domain. I think in hierarchies.
+This sort of makes sense. While I'm used to going through my day as events in time (wake up, have breakfast, shower, _really_ wake up, etc), the act of _understanding_ feels like building a graph. When I plan for a new project, my mind jumps to try and form a picture of the current structure of the system. I try to understand how the different components interact with each other, and how they relate to the business domain. I think in hierarchies.
 
 <figure class="post-figure">
   <img
