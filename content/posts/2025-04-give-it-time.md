@@ -66,7 +66,7 @@ line_item = LineItem.create(order: order, variant: variant, ...)
 ```
 
 Because of this malleability, domain invariants become hard to enforce and reason about.
-For example, if a business rule says that an order can only have up to 5 line items: that validation probably lives in the context of an _order_. But since the object graph does not prescribed its "public" entry points, we're forced to resort to callbacks and other indirect methods to enforce invariants across whole sections of the graph.
+For example, if a business rule says that an order can only have up to 5 line items: that validation probably lives in the context of an _order_. But since the object graph does not prescribe its "public" entry points, we're forced to resort to callbacks and other indirect methods to enforce invariants across whole sections of the graph.
 
 ```ruby
 class Order
