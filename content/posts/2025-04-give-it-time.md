@@ -305,7 +305,7 @@ We care about what the system can do, and when it can do it relative to workflow
 
 ### Notes
 
-Workflows are central for a lot of domains. If you think about it, it's peculiar that we design software based on object graphs and treat the workflows as, at best, a secondary part of the design process, and as an afterthought at worst.
+Workflows are central to a lot of domains. If you think about it, it's peculiar that we design software based on object graphs and treat the workflows as, at best, a secondary part of the design process, and as an afterthought at worst.
 
 I suspect this is mainly because of the legacy of relational databases as our primary way of interacting with and storing data for many decades. It's all about the data schemas, and any behaviour is implicit in the interactions made possible by those schemas. This is reinforced by CRUD toolkits built on top of these assumptions.
 
