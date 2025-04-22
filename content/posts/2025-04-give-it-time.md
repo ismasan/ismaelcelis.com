@@ -301,11 +301,11 @@ We care about what the system can do, and when it can do it relative to workflow
 
 * Graphs are deep, timelines are shallow.
 * Shallow is simpler to reason about, and more resistant to coupling.
-* Your domain can be modeled, and thought of, as timelines instead of a graphs.
+* Your domain can be modeled, and thought of, as timelines instead of graphs.
 
 ### Notes
 
-Many industries care about workflows as much as object graphs. If you think about it, it's crazy that we design software based on the latter and treat the former as, at best, a secondary part of the design process, and as an afterthought at worst.
+Workflows are central for a lot of domains. If you think about it, it's peculiar that we design software based on object graphs and treat the workflows as, at best, a secondary part of the design process, and as an afterthought at worst.
 
 I suspect this is mainly because of the legacy of relational databases as our primary way of interacting with and storing data for many decades. It's all about the data schemas, and any behaviour is implicit in the interactions made possible by those schemas. This is reinforced by CRUD toolkits built on top of these assumptions.
 
