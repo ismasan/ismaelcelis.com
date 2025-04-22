@@ -271,7 +271,7 @@ Whether the timelines are concurrent or sequential is a business decision. In th
 
 ### Automate this
 
-Composing workflows based on this reduced set of building blocks let's us automate where it makes sense.
+Composing workflows based on this reduced set of building blocks lets us automate where it makes sense.
 We can start with a human-operated workflow, where a staff member must confirm orders ready to be released to the customer, once both payment and build are complete.
 
 <figure class="post-figure">
