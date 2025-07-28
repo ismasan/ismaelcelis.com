@@ -209,6 +209,6 @@ let awakeCat: AwakeCat = awake sleepyCat
 
 ### Why do we think this way
 
-I think this is a bias that we Object Oriented have mainly because of the basic assumption that OOP code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
+I think this is a bias that we Object Oriented devs have mainly because of the basic assumption that OOP code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
 
 However useful these tools are, it’s worth seeing through the huge assumptions they make about what’s possible when translating problems into code.
