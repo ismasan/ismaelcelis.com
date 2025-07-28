@@ -4,11 +4,11 @@ title: "Identity and behaviour"
 date: 2025-07-10T22:59:00Z
 authors: ["Ismael Celis"]
 tags: ["architecture", "ddd"]
-description: "In Object Oriented programming, identity and behaviour are often conflated. Some loud thinking on splitting them up."
+description: "In Object Oriented programming, identity and behaviour are often conflated. But it can be usefuk to think of them as different concepts."
 images: ["/images/2025/identity-and-behaviour/identity-and-behaviour.png"]
 ---
 
-In Object Oriented programming, identity and behaviour are often conflated. Some loud thinking on splitting them up.
+In Object Oriented programming, identity and behaviour are often conflated. But it can be useful to think of them as different concepts.
 
 <!--more-->
 
