@@ -154,7 +154,7 @@ class AsleepCat
 end
 ```
 
-This is obviously simplistic. Pepper’s behaviour could vary on multiple dimensions; for example she might refuse to eat if she’s already full, or a newborn kitten, etc. Here we could use composition, delegation, etc. But I think the more general point is: once we drop the assumption that identity and behaviour are the same thing, we open up a whole new set of understanding the mapping between reality and code.
+This is obviously simplistic. Pepper’s behaviour could vary on multiple dimensions; for example she might refuse to eat if she’s already full, or a newborn kitten, etc. Here we could use composition, delegation, etc. It could even mean that we shift what the classes represent altogether, for example having `Awakebehaviour` or `AsleepBehaviour` policy-like classes that compose into what a "cat" means in our domain. But I think the more general point is: once we drop the assumption that identity and behaviour are the same thing, we open up a whole new set of understanding the mapping between reality and code.
 
 ### Why do we think this way
 
