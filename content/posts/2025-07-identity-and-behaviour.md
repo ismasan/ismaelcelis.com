@@ -156,8 +156,59 @@ end
 
 This is obviously simplistic. Pepper’s behaviour could vary on multiple dimensions; for example she might refuse to eat if she’s already full, or a newborn kitten, etc. Here we could use composition, delegation, etc. It could even mean that we shift what the classes represent altogether, for example having `Awakebehaviour` or `AsleepBehaviour` policy-like classes that compose into what a "cat" means in our domain. But I think the more general point is: once we drop the assumption that identity and behaviour are the same thing, we open up a whole new understanding of the mapping between reality and code.
 
+### A note on Event Sourcing
+
+[Event Sourcing](https://ismaelcelis.com/posts/event-sourcing-ruby-examples/) takes this separation to its logical conclusion: in that paradigm there's only identity (ex. `cat-pepper`), usually called a "stream", and then the things that happen to that identity, in the form of an ordered log of events.
+Any state is derived from the events themselves and its only contextual to the decision or behaviour that needs to be applied at a given time. In fact, different state can be derived from the same events, depending on the use case. In that way, state is only an _interpretation_ of the events.
+
+```
+[1] type: 'ate', cat: 'pepper', food: 'tuna', timestamp: '2025-07-10T22:59:00Z'
+[2] type: 'slept', cat: 'pepper', timestamp: '2025-07-10T23:00:00Z'
+[3] type: 'awoke', cat: 'pepper', timestamp: '2025-07-11T23:00:00Z'
+```
+
+By event `[3]`, Pepper is awake again, so the "eating" behaviour is valid.
+
+### A note on Functional Programming
+
+In FP this friction doesn’t really exist, because there state and behaviour are clearly delineated (by design). 
+
+```fsharp
+// Use types to represent the different states of the cat
+type AwakeCat = { Name: string }
+type AsleepCat = { Name: string }
+
+// Union type for when you need to handle either state
+type Cat = 
+    | Awake of AwakeCat
+    | Asleep of AsleepCat
+
+// Use functions as behaviours, 
+// tied to types to make invalid behaviours impossible
+let sleep (cat: AwakeCat) : AsleepCat =
+    { Name = cat.Name }
+
+let awake (cat: AsleepCat) : AwakeCat =
+    { Name = cat.Name }
+
+let eat (cat: AwakeCat) (food: string) : AwakeCat =
+    printfn "%s is eating %s" cat.Name food
+    cat
+
+// A function that takes any of the known states
+let printCat (cat: Cat) : unit =
+    match cat with
+    | Awake awakeCat -> printfn "%s is awake" awakeCat.Name
+    | Asleep asleepCat -> printfn "%s is sleeping" asleepCat.Name
+
+// Example usage
+let myCat: AwakeCat = { Name = "Pepper" }
+let sleepyCat: AsleepCat = sleep myCat
+let awakeCat: AwakeCat = awake sleepyCat
+```
+
 ### Why do we think this way
 
-In FP this friction doesn’t really exist, because there state and behaviour are clearly delineated (by design). I think this is a bias that we Object Oriented have mainly because of the basic assumption that OOP code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
+I think this is a bias that we Object Oriented have mainly because of the basic assumption that OOP code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
 
 However useful these tools are, it’s worth seeing through the huge assumptions they make about what’s possible when translating problems into code.
