@@ -10,6 +10,8 @@ images: ["/images/2025/identity-and-behaviour/order-flow.svg"]
 
 One of the many assumptions that Object Orientation makes is that identity and behaviour always go together. There’s a cat named “Fuzzy”, and she can play, eat, and sleep (among other things). She jumps to your lap and curls up for a cuddle every time you call her name in a certain tone. In our understanding of Fuzzy, those behaviours are intrinsically linked to her Fuzzy-ness.
 
+<!--more-->
+
 ```ruby
 class Cat
   attr_reader :name
