@@ -158,6 +158,6 @@ This is obviously simplistic. Pepper’s behaviour could vary on multiple dimens
 
 ### Why do we think this way
 
-In FP this friction doesn’t really exist, because there state and behaviour are clearly delineated (by design). I think this is a biases that we Object Oriented have mainly because of the basic assumption that OO code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
+In FP this friction doesn’t really exist, because there state and behaviour are clearly delineated (by design). I think this is a bias that we Object Oriented have mainly because of the basic assumption that OOP code works “by analogy to the real world”, which is also compounded by the common reliance on the ORM pattern, which once again blends together behaviour and data persistence (so we naturally think that a record in the database, the ORM class that represents it, and the behaviour it implements are all one and the same thing). 
 
 However useful these tools are, it’s worth seeing through the huge assumptions they make about what’s possible when translating problems into code.
