@@ -8,9 +8,12 @@ description: "In Object Oriented programming, identity and behaviour are often c
 images: ["/images/2025/identity-and-behaviour/order-flow.svg"]
 ---
 
-One of the many assumptions that Object Orientation makes is that identity and behaviour always go together. There’s a cat named “Pepper”, and she can play, eat, and sleep (among other things). She jumps to your lap and curls up for a cuddle every time you call her name in a certain tone. In my understanding of Pepper, those behaviours are intrinsically linked to her Pepper-ness.
+In Object Oriented programming, identity and behaviour are often conflated. Some loud thinking on splitting them up.
 
 <!--more-->
+
+One of the many assumptions we programmers sometimes make is that identity and behaviour always go together. 
+Say I have a cat named “Pepper”, and she can play, eat, and sleep (among other things). In my understanding of Pepper, those behaviours are intrinsically linked to her Pepper-ness.
 
 ```ruby
 class Cat
