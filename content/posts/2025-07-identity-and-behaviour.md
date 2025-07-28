@@ -8,7 +8,7 @@ description: "In Object Oriented programming, identity and behaviour are often c
 images: ["/images/2025/identity-and-behaviour/order-flow.svg"]
 ---
 
-One of the many assumptions that Object Orientation makes is that identity and behaviour always go together. There’s a cat named “Fuzzy”, and she can play, eat, and sleep (among other things). She jumps to your lap and curls up for a cuddle every time you call her name in a certain tone. In our understanding of Fuzzy, those behaviours are intrinsically linked to her Fuzzy-ness.
+One of the many assumptions that Object Orientation makes is that identity and behaviour always go together. There’s a cat named “Pepper”, and she can play, eat, and sleep (among other things). She jumps to your lap and curls up for a cuddle every time you call her name in a certain tone. In my understanding of Pepper, those behaviours are intrinsically linked to her Pepper-ness.
 
 <!--more-->
 
@@ -38,7 +38,7 @@ At first glance, this mental model makes perfect sense, since it seems to map to
 
 ### A State of being
 
-But do cats *always* do those things? Does Fuzzy eat when she’s asleep?
+But do cats *always* do those things? Does Pepper eat when she’s asleep?
 
 ```ruby
 class Cat
@@ -61,7 +61,7 @@ class Cat
 end
 ```
 
-So, even if Fuzzy’s identity remains a constant (for our purposes), it turns out that at least some behaviours are in fact dependent on state. 
+So, even if Pepper’s identity remains a constant (for our purposes), it turns out that at least some behaviours are in fact dependent on state. 
 
 If we stick with the convention that a single class or module merges the ideas of identity and behaviour into a single concept, we need to guard our behaviours to only apply to the relevant state. Our code can quickly become defensive and finicky.
 
@@ -97,7 +97,7 @@ end
 
 This is certainly comprehensive, but it’s already quite indirect, and it should at least give us some pause: why do I need what’s essentially a different language to express this? Is this a technical or a “thinking” problem?
 
-This approach seems to rest on the assumption that our code MUST map one-to-one directly with “real” objects. We see Fuzzy as “the same” cat regardless of whether she’s sleeping or not, therefore we should represent her in code as the same class containing all state and behaviours that we care about. Using a special DSL is a fair price to pay in order to keep that assumption going.
+This approach seems to rest on the assumption that our code MUST map one-to-one directly with “real” objects. We see Pepper as “the same” cat regardless of whether she’s sleeping or not, therefore we should represent her in code as the same class containing all state and behaviours that we care about. Using a special DSL is a fair price to pay in order to keep that assumption going.
 
 ### Identity is about history
 
@@ -115,11 +115,11 @@ This essential disconnect between identity and behaviour can come to the surface
 
 So if “the business” cares about identity linked to history more than it cares about some static representation of some arbitrary subset of behaviour in code, it stands to reason to ask why are we tying identity to specific classes in the first place.
 
-Fuzzy is the same cat to us “in the real world”, but that does not mandate that she must be modelled that way in code. [The real world doesn’t exist](https://udidahan.com/2012/03/05/dont-try-to-model-the-real-world-it-doesnt-exist/).
+Pepper is the same cat to us “in the real world”, but that does not mandate that she must be modelled that way in code. [The real world doesn’t exist](https://udidahan.com/2012/03/05/dont-try-to-model-the-real-world-it-doesnt-exist/).
 
 ### Model behaviour separate from identity
 
-If you think of identity (the thing you track), and behaviour (the things that can happen to that identity at different times or states) as separate concepts, you can re-model Fuzzy with classes that encapsulate the different behaviours without special pseudo-languages.
+If you think of identity (the thing you track), and behaviour (the things that can happen to that identity at different times or states) as separate concepts, you can re-model Pepper with classes that encapsulate the different behaviours without special pseudo-languages.
 
 ```ruby
 class AwakeCat
@@ -151,7 +151,7 @@ class AsleepCat
 end
 ```
 
-This is obviously simplistic. Fuzzy’s behaviour could vary on multiple dimensions; for example it might refuse to eat if she’s already full, or a newborn kitten, etc. Here we could use composition, delegation, etc. But I think the more general point is: once we drop the assumption that identity and behaviour are the same thing, we open up a whole new set of understanding the mapping between reality and code.
+This is obviously simplistic. Pepper’s behaviour could vary on multiple dimensions; for example it might refuse to eat if she’s already full, or a newborn kitten, etc. Here we could use composition, delegation, etc. But I think the more general point is: once we drop the assumption that identity and behaviour are the same thing, we open up a whole new set of understanding the mapping between reality and code.
 
 ### Why do we think this way
 
