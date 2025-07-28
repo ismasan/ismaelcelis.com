@@ -100,7 +100,7 @@ end
 
 This is certainly comprehensive, but it’s already quite indirect, and it should at least give us some pause: why do I need what’s essentially a different language to express this? Is this a technical or a modelling problem?
 
-This approach seems to rest on the assumption that our code MUST map one-to-one directly with “real” objects. We see Pepper as “the same” cat regardless of whether she’s sleeping or not, therefore we should represent her in code as the same class containing all state and behaviours that we care about. Using a special DSL is a fair price to pay in order to keep that assumption going.
+This approach seems to rest on the assumption that our code MUST map one-to-one to “real” objects out there in the world. We see Pepper as “the same” cat regardless of whether she’s sleeping or not, therefore we should represent her in code as the same class containing all state and behaviours that we care about. Using a special DSL is a fair price to pay in order to keep that assumption going.
 
 ### Identity is about history
 
