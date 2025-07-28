@@ -104,7 +104,9 @@ This approach seems to rest on the assumption that our code MUST map one-to-one 
 
 ### Identity is about history
 
-And “identity” is surely a useful concept! In real software systems we rely on identity to track how things behave over time. In an e-commerce system we want to know that `order-123` started as an empty cart, then a bag of cat litter and a can of cat food were added to it, then it was placed and became an Order, then it became two “shipments” because the cat litter is only available next week.
+“Identity” is surely a useful concept. In fact, it's probably the one business-facing concept most likely to prevail over any technical abstraction.
+
+In real software systems we rely on identity to track how things behave over time. In an e-commerce system we want to know that `order-123` started as an empty cart, then a bag of cat litter and a can of cat food were added to it, then it was placed and became an Order, then it became two “shipments” because the cat litter is only available next week.
 
 <img
   src="/images/2025/identity-and-behaviour/order-flow.svg"
