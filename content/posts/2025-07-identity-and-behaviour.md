@@ -190,7 +190,7 @@ type Cat =
 let sleep (cat: AwakeCat) : AsleepCat =
     { Name = cat.Name }
 
-let awake (cat: AsleepCat) : AwakeCat =
+let wakeUp (cat: AsleepCat) : AwakeCat =
     { Name = cat.Name }
 
 let eat (cat: AwakeCat) (food: string) : AwakeCat =
@@ -206,7 +206,7 @@ let printCat (cat: Cat) : unit =
 // Example usage
 let myCat: AwakeCat = { Name = "Pepper" }
 let sleepyCat: AsleepCat = sleep myCat
-let awakeCat: AwakeCat = awake sleepyCat
+let awakeCat: AwakeCat = wakeUp sleepyCat
 ```
 
 ### Why do we think this way
