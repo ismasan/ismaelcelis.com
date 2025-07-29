@@ -150,7 +150,7 @@ class AsleepCat
     # implement this
   end
   
-  def awake
+  def wake_up
     AwakeCat.new(@name)
   end
 end
