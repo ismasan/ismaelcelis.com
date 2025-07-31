@@ -34,7 +34,7 @@ And with time as a dimension, and change as a driver, graphs can go from asset t
 
 ### Depth and coupling
 
-Graphs grow deeper as the domain grows more complex. Perhaps product variants have allowed "complements" associated to them (to validate which other products can be added to them. for example toppings and add-ons). Perhaps they have a price. Perhaps customers can have discounts that can be applied to their orders.
+Graphs grow deeper as the domain grows more complex. Perhaps product variants have "allowed complements" associated to them (to validate which other products can be added to them, for example toppings and add-ons). Perhaps they have a price. Perhaps customers can have discounts that can be applied to their orders.
 
 <figure class="post-figure">
   <img
