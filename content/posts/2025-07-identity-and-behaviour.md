@@ -161,7 +161,7 @@ This is obviously simplistic. Pepper’s behaviour could vary on multiple dimens
 ### A note on Event Sourcing
 
 [Event Sourcing](https://ismaelcelis.com/posts/event-sourcing-ruby-examples/) takes this separation to its logical conclusion: in that paradigm there's only identity (ex. `cat-pepper`), usually called a "stream", and then the things that happen to that identity, in the form of an ordered log of events.
-Any state is derived from the events themselves and its only contextual to the decision or behaviour that needs to be applied at a given time. In fact, different state can be derived from the same events, depending on the use case. In that way, state is only an _interpretation_ of the events.
+Any state is derived from the events themselves and it's only contextual to the decision or behaviour that needs to be applied at a given time. In fact, different state can be derived from the same events, depending on the use case. In that way, state is only an _interpretation_ of the events.
 
 ```
 [1] type: 'ate', cat: 'pepper', food: 'tuna', timestamp: '2025-07-10T22:59:00Z'
