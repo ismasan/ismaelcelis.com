@@ -311,6 +311,8 @@ I suspect this is mainly because of the legacy of relational databases as our pr
 
 ### Links
 
+[September update]: In [this talk](https://www.youtube.com/watch?v=KKgc5T-qe5w) at Baltic Ruby 2025 I show how I've been exploring actually implementing these ideas in Ruby.
+
 [Event Modeling](https://eventmodeling.org) is the main source for the ideas and diagrams in this post (though I've skipped some of its conventions to take some points across).
 While [Event Sourcing](/posts/event-sourcing-ruby-examples/) is the obvious architectural pattern to implement this approach, modeling in these terms is high-level and should work well with [state-stored systems](/posts/decide-evolve-react-pattern-in-ruby/#event-sourced-vs-state-stored-systems).
 
