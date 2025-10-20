@@ -12,9 +12,10 @@ Video of a presentation on Ruby and Event Sourcing I gave at [Baltic Ruby 2025](
 The code samples lost formatting during editing (my fault: use images next time!) but all in all I think it's a decent summary of where my ideas were a few months ago.
 
 <figure class="post-figure">
-  <a href="https://www.youtube.com/watch?v=KKgc5T-qe5w" title="Watch on YouTube">
+  <a href="https://www.youtube.com/watch?v=EgUwnzUJHMA" title="Watch on YouTube">
     <img src="/images/2025/baltic-ruby-2025.jpeg" alt="Baltic Ruby 2025 talk: an Event-Sourced programming model for Ruby" />
   </a>
-  <figcaption>Watch the talk on <a href="https://www.youtube.com/watch?v=KKgc5T-qe5w">YouTube</a></figcaption>
+  <figcaption>Watch the talk on <a href="https://www.youtube.com/watch?v=EgUwnzUJHMA">YouTube</a></figcaption>
 </figure>
 
+PS: the "official" Baltic Ruby video is [here](https://www.youtube.com/watch?v=KKgc5T-qe5w), but I re-edited the video above to overlay the original demo videos that were lost in editing.
