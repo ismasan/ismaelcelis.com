@@ -19,7 +19,7 @@ There, I said it.
 
 <!--more-->
 
-Big MVC™ wants us to believe that some kinds of business logic is synchronous, ie. it runs, changes the state of the system, and returns some kind of result reflecting the change, and some other logic is asynchronous, running in the background, and the caller doesn't need and immediate response. They are completely different beasts and it's right to keep them apart.
+Big MVC™ wants us to believe that some kinds of business logic is synchronous, ie. it runs, changes the state of the system, and returns some kind of result reflecting the change, and some other logic is asynchronous, running in the background, and the caller doesn't need an immediate response. They are completely different beasts and it's only right to keep them apart.
 
 In web dev, the former usually takes the form of controller actions or HTTP handlers. The latter, background "jobs" sent to a queue.
 
