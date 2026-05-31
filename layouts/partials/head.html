@@ -20,7 +20,7 @@
   <!---->
   {{ $custom_css := resources.Get "custom.css" }}
   <!---->
-  {{ $css := slice $app_css $custom_css | resources.Concat "app.css" | minify }}
+  {{ $css := slice $app_css $custom_css | resources.Concat "app.css" | minify | fingerprint }}
   <link rel="preload stylesheet" as="style" href="{{ $css.Permalink }}" />
 
   {{ if and .IsPage (not site.Params.disableHLJS) }}
