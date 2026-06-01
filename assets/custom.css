@@ -188,6 +188,14 @@ body .post-entry .post-entry-summary {
   margin-bottom: 2rem;
 }
 
+body .post-entry .post-entry-summary p {
+  margin-bottom: 2rem;
+}
+
+body .post-entry .post-entry-summary p:last-child {
+  margin-bottom: 0;
+}
+
 body .post-entry .post-entry-summary a {
   display: inline;
   font-size: 2rem;
