@@ -215,3 +215,7 @@ body .post-entry .post-entry-summary a:hover {
   text-align: center;
   color: var(--lit);
 }
+
+.post-video {
+  width: 100%;
+}
