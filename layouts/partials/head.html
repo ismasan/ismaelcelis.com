@@ -36,13 +36,6 @@
   <script defer data-domain="ismaelcelis.com" src="https://plausible.io/js/plausible.js"></script>
   <!-- / analytics -->
 
-  <!-- Preload -->
-  <link rel="preload" as="image" href="{{ `theme.png` | absURL }}" />
-
-  {{ range $.Scratch.Get "social-list" }}
-  <link rel="preload" as="image" href="{{ printf `%s.svg` . | absURL }}" />
-  {{ end }}
-
   <!-- Favicon -->
   <link rel="icon" href="{{ `favicon.ico` | absURL }}" />
   <link rel="apple-touch-icon" href="{{ `apple-touch-icon.png` | absURL }}" />
