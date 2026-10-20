@@ -24,7 +24,7 @@ Structural models (your typical CRUD app modelled around database schemas and ob
 
 <figure class="post-figure">
   <img src="/images/2026/welcome-to-the-machine/how-to-coffee.png" alt="Where's the behaviour modeled?" />
-  <figcaption>The object model on its own doesn't tell me how to order a cup of coffee.</figcaption>
+  <figcaption>The object model on its own doesn't tell me how to order a cup of coffee in this coffee shop. You had ONE job, object model!</figcaption>
 </figure>
 
 Except that this is almost never how systems are built, in practice. Your client asks for a new feature -say: customers need to be able to select add-ons for their coffee- and we very specifically introduce the entities and relationships needed for the object model to support that one new behaviour. Then we model the customer workflow on top of the new objects by a mishmash of application-level artefacts (controllers, routes, jobs, views, etc) glued together by circumstance. 
