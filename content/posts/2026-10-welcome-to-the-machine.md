@@ -20,7 +20,7 @@ So I’ve been banging on about the benefits of what I’ll call [causal modelli
 
 Object models are not enough to explain a domain. They are great at describing the structure of a system, but have very little to say about the behaviour of the system. And we build software to _do_ stuff. Most domains are about the doing, the verbs, the behaviour. And behaviour is described through causality. `A` leads to `B`, `B` leads to `C` or `D`.
 
-Structural models (your typical CRUD app modelled around database schemas and object relationships) aspire to describe a kind of platonic domain of static entities floating in the ether, and its up to us mortals to work out how to actually use them. Behaviour is assumed to emerge from an object model’s possible interactions.
+Structural models (your typical CRUD app modelled around database schemas and object relationships) aspire to describe a kind of platonic domain of static entities floating in the ether, and it's up to us mortals to work out how to actually use them. Behaviour is assumed to emerge from an object model’s possible interactions.
 
 <figure class="post-figure">
   <img src="/images/2026/welcome-to-the-machine/how-to-coffee.png" alt="Where's the behaviour modeled?" />
