@@ -47,7 +47,7 @@ And this is not even a new problem! The hunt for deterministic, declarative beha
   <figcaption>Declarative statecharts, in Ruby, and the diagram generated from the code. If program causality can be diagrammed mechanically, it can be understood unambiguously.</figcaption>
 </figure>
 
-But here’s the thing. A 10-person team is now a 10-person plus robots team, and produces 10X more code per day. As an individual developer, this is not dissimilar to joining a 100-person team and trying to keep up. The robots may have become sophisticated enough to handle it, but we still need to understand what they’re doing, and they need to understand what we want.
+But here’s the thing. A 10-person team is now a 10-person-plus-robots-team, and produces 10X more code per day. As an individual developer, this is not dissimilar to joining a 100-person team and trying to keep up. The robots may have become sophisticated enough to handle it, but we still need to understand what they’re doing, and they need to understand what we want.
 
 It’s very difficult to know what you want to build next if you don’t understand what’s already been built.
 
