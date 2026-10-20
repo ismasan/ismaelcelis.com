@@ -12,7 +12,7 @@ This blog post is only incidentally about AI.
 
 I wasn’t happy with the state of programming even before the robot apocalypse. It wasn’t all the typing, though I’m still a terrible typist, 25 years in. It was just that sense of things continually escaping the limits of my understanding.
 
-I have the attention span of an anaesthetised goldfish, and have always struggled keeping too much detail in my head at once. I’m always in awe at how some colleagues glide through large codebases seemingly knowing where everything is and what everything does. I’m not like that, so I always try to come up with abstractions that let me grasp the gist of the problem while ignoring the details.
+I have the attention span of an anaesthetised goldfish, and have always struggled with keeping too much detail in my head at once. I’m always in awe at how some colleagues glide through large codebases seemingly knowing where everything is and what everything does. I’m not like that, so I always try to come up with abstractions that let me grasp the gist of the problem while ignoring the details.
 
 That’s what an abstraction is, of course! But I think I was always after a particular kind of abstraction, and I’ve only been able to articulate it in the last few years: I need the code to tell me stories. I want to follow a thread from start to finish. How do you draft and send an invoice in this app? [How do I order a cup of coffee?](https://ismaelcelis.com/posts/2025-09-baltic-ruby-event-sourcing-talk/)
 
