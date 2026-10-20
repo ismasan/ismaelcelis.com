@@ -18,7 +18,7 @@ That’s what every abstraction is, of course! But I think I was always after a 
 
 So I’ve been banging on about the benefits of what I’ll call [causal modelling](https://ismaelcelis.com/posts/2025-04-give-it-time/) to anyone who’ll listen. It’s both a simple idea and surprisingly difficult to get across, but here’s the TL;DR again:
 
-Object models are not enough to explain a domain. They are great at describing the structure of a system, but have very little to say about the behaviour of the system. And we build software to do stuff. Most domains are about the doing, the verbs, the behaviour. And behaviour is described through causality. `A` leads to `B`, `B` leads to `C` or `D`.
+Object models are not enough to explain a domain. They are great at describing the structure of a system, but have very little to say about the behaviour of the system. And we build software to _do_ stuff. Most domains are about the doing, the verbs, the behaviour. And behaviour is described through causality. `A` leads to `B`, `B` leads to `C` or `D`.
 
 Structural models (your typical CRUD app modelled around database schemas and object relationships) pretend to describe a kind of platonic domain of static entities floating in the ether, and its up to us mortals to work out how to actually use them. Behaviour is assumed to emerge from an object model’s possible interactions.
 
