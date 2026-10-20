@@ -62,4 +62,4 @@ We’re very lucky that this problem has existed for decades and we have a huge 
   <figcaption>A web UI for the Ruby statechart above. All behaviours, validations and UI states are derived from the statechart definition. The program structure is statically-inspectable, and runtime-observable.</figcaption>
 </figure>
 
-So, this blog post is not about AI, or the end of coding. It's about reducing the cognitive gap between software design and expected outcome. The robots just make the gap really hard to ignore.
+So, this blog post is not about AI, or the end of coding. It's about the cognitive gap between software design and expected outcome. The robots just make the gap really hard to ignore.
