@@ -1,0 +1,27 @@
+{{ define "main" }}
+
+<!-- Main Title -->
+<h1 class="term-title">
+  Posts tagged <strong>{{ .Data.Term }}</strong>
+  <span class="meta">{{ len .Pages }} {{ cond (eq (len .Pages) 1) "post" "posts" }}</span>
+</h1>
+
+<!-- Articles -->
+{{ $paginator := .Paginate .Pages 20 }}
+{{ range $paginator.Pages }}
+  {{ partial "post_entry" . }}
+{{ end }}
+
+<!-- Main Nav -->
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="main-nav">
+  {{ if $paginator.HasPrev }}
+  <a class="prev" href="{{ $paginator.Prev.URL }}">← {{ i18n "prev_page" }}</a>
+  {{ end }}<!---->
+  {{ if $paginator.HasNext }}
+  <a class="next" href="{{ $paginator.Next.URL }}">{{ i18n "next_page" }} →</a>
+  {{ end }}
+</nav>
+{{ end }}<!---->
+
+{{ end }}

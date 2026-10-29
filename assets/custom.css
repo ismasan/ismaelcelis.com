@@ -227,3 +227,30 @@ body .post-entry .post-entry-summary a:hover {
 .post-video {
   width: 100%;
 }
+
+body .post-entry a.post-entry--tag {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+/* Tag (term) pages
+ * ----------------------------------*/
+.term-title {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: solid 1px var(--fog);
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--lit);
+}
+.term-title strong {
+  color: var(--pro);
+}
+.term-title .meta {
+  display: block;
+  margin-top: .4rem;
+  font-size: 1.7rem;
+  color: var(--air);
+}

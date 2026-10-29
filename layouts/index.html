@@ -11,7 +11,7 @@
       {{- if $tags -}}
         {{- $lastIndex := sub (len $tags) 1 -}}
         {{- range $index, $tag := $tags -}}
-          <span class="post-entry--tag"> {{ $tag }}</span>
+          <a class="post-entry--tag" href="{{ (printf "tags/%s/" ($tag | urlize)) | relURL }}">{{ $tag }}</a>
           {{- if ne $index $lastIndex }}, {{ end -}}
         {{- end -}}
       {{- end -}}
@@ -29,23 +29,8 @@
 <!-- Articles -->
 {{ $paginator := .Paginate (after 1 (where .Site.RegularPages "Type" "in" site.Params.mainSections)) 20 }}
 
-{{ range $index, $page := $paginator.Pages }}
-<article class="post-entry in-home">
-  <a href="{{ .Permalink }}">{{ .Title }}</a>
-  <time>{{ .Date | time.Format ":date_medium" }}</time>
-  <span class="meta">{{ .ReadingTime }} minutes read</span>
-  <span class="meta">
-    {{- $tags := .Params.tags -}}
-    {{- if $tags -}}
-      {{- $lastIndex := sub (len $tags) 1 -}}
-      {{- range $index, $tag := $tags -}}
-        <span class="post-entry--tag"> {{ $tag }}</span>
-        {{- if ne $index $lastIndex }}, {{ end -}}
-      {{- end -}}
-    {{- end -}}
-  </span>
-  <p>{{ .Description }}</p>
-</article>
+{{ range $paginator.Pages }}
+  {{ partial "post_entry" . }}
 {{ end }}
 
 {{ partial "older_posts" }}

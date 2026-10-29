@@ -1,0 +1,16 @@
+<article class="post-entry in-home">
+  <a href="{{ .Permalink }}">{{ .Title }}</a>
+  <time>{{ .Date | time.Format ":date_medium" }}</time>
+  <span class="meta">{{ .ReadingTime }} minutes read</span>
+  <span class="meta">
+    {{- $tags := .Params.tags -}}
+    {{- if $tags -}}
+      {{- $lastIndex := sub (len $tags) 1 -}}
+      {{- range $index, $tag := $tags -}}
+        <a class="post-entry--tag" href="{{ (printf "tags/%s/" ($tag | urlize)) | relURL }}">{{ $tag }}</a>
+        {{- if ne $index $lastIndex }}, {{ end -}}
+      {{- end -}}
+    {{- end -}}
+  </span>
+  <p>{{ .Description }}</p>
+</article>
